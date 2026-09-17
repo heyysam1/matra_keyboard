@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matra Keyboard — মাত্রা কীবোর্ড</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/views.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <!-- Left: Logo & Application Name -->
+      <div class="brand-section">
+        <div class="brand-logo-container">
+          <img id="header-app-logo" class="brand-logo-img" src="./assets/logos/logo-orange.png" alt="Matra Keyboard Logo">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title" data-i18n="brand-name">মাত্রা কীবোর্ড</span>
+        </div>
+      </div>
+
+      <!-- Right: Language Switcher, Onboarding Guide, Theme Accent Cycle -->
+      <div class="header-controls">
+        <!-- Language Switcher (Interface Language: English / বাংলা) -->
+        <button id="lang-switch-btn" class="btn-glass font-mono" onclick="toggleLanguage()" title="Toggle Interface Language">
+          <svg width="14" height="14" class="theme-accent-color" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span id="lang-indicator">বাংলা</span>
+        </button>
+
+        <!-- Help / Onboarding Button -->
+        <button class="icon-btn" onclick="showOnboarding()" title="Guide & Help">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </button>
+
+        <!-- Accent Color Cycle Button -->
+        <button class="icon-btn" onclick="cycleAccentColor()" title="Cycle Accent Color">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4 4 4 0 014-4 4 4 0 014-4 4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- ============================================== -->
+    <!-- MAIN APPLICATION WINDOW                       -->
+    <!-- ============================================== -->
+    <div id="view-app" class="app-window glass-panel">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div>
+          <!-- Relocated Quick Controls: Typing Mode Toggle + Compact Layout Viewer Button -->
+          <div class="sidebar-quick-bar">
+            <button id="studio-mode-badge" class="mode-indicator-badge font-bengali" onclick="toggleAppMode()" title="Toggle Typing Mode (Ctrl+Space)" style="flex: 1; justify-content: center;">
+              <span class="mode-indicator-dot"></span>
+              <span id="studio-mode-text">বাংলা মোড</span>
+            </button>
+            <button id="btn-toggle-vk" class="icon-btn" style="width: 2.15rem; height: 2.15rem; border-radius: var(--radius-xl); flex-shrink: 0;" onclick="openLayoutViewer()" title="Virtual Keyboard Layout Viewer">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </button>
+          </div>
+
+          <div class="sidebar-title" data-i18n="sidebar-menu-title">নেভিগেশন প্যানেল</div>
+          <nav class="nav-list">
+            <button id="tab-btn-typing" class="nav-item active font-bengali" onclick="setTab('typing')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-typeface">টাইপফেস ও লেআউট</span>
+            </button>
+            <button id="tab-btn-font" class="nav-item font-bengali" onclick="setTab('font')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-font">ফন্ট সিলেকশন</span>
+            </button>
+            <button id="tab-btn-dict" class="nav-item font-bengali" onclick="setTab('dict')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-dictionary">কাস্টম ডিকশনারি</span>
+            </button>
+            <button id="tab-btn-converter" class="nav-item font-bengali" onclick="setTab('converter')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-converter">লিপি রূপান্তর</span>
+            </button>
+            <button id="tab-btn-care" class="nav-item font-bengali" onclick="setTab('care')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-system-care">সিস্টেম কেয়ার</span>
+            </button>
+            <button id="tab-btn-settings" class="nav-item font-bengali" onclick="setTab('settings')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="menu-settings">সেটিংস</span>
+            </button>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Dynamic Content Area -->
+      <section class="content-area">
+
+        <!-- TAB 1: TYPING STUDIO -->
+        <div id="content-typing" class="content-pane">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="studio-heading">টাইপিং স্টুডিও</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <!-- Layout Switcher Select -->
+              <select id="studio-layout-select" class="glass-input font-mono" style="padding: 0.4rem 0.75rem; border-radius: var(--radius-lg); font-size: 0.75rem; color: #ffffff; outline: none;" onchange="setAppLayout(this.value)">
+                <option value="avro">Avro Phonetic (অভ্র)</option>
+                <option value="bijoy">Bijoy Classic (বিজয়)</option>
+                <option value="probhat">Probhat (প্রভাত)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Typing Preview Box & Floating 5-Row Suggestion Popover -->
+          <div style="position: relative;">
+            <input id="typing-hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; left: -9999px;">
+            <div id="typing-preview-box" class="glass-input preview-box font-bengali" style="cursor: text;" title="Click to type">
+              <span class="committed-text"></span><span class="phonetic-token"></span><span class="caret-bar caret-pulse"></span>
+            </div>
+
+            <!-- 5-Row Floating Suggestion Popover -->
+            <div id="suggestion-popover" class="glass-popover suggestion-popover">
+              <div class="popover-header">
+                <span data-i18n="popover-title">সাজেশন তালিকা</span>
+                <span style="color: #71717a; font-size: 0.65rem;">ESC</span>
+              </div>
+              <div id="popover-candidate-list" class="popover-list">
+                <!-- Rendered dynamically by typingStudio.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: SETTINGS & PERSONALIZATION -->
+        <div id="content-settings" class="content-pane hidden">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="settings-title">কিবোর্ড সেটিংস ও পারসোনালাইজেশন</h2>
+              <p class="pane-subtitle font-bengali" data-i18n="settings-subtitle">আপনার টাইপিং, শব্দ ও ভিজ্যুয়াল অভিজ্ঞতা কাস্টমাইজ করুন</p>
+            </div>
+          </div>
+
+          <div class="settings-cards-container" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- CARD 1: TYPING & SOUND -->
+            <div id="settings-card-typing-sound" class="settings-card glass-panel" style="padding: 1.25rem; border-radius: var(--radius-2xl);">
+              <div class="settings-card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 class="font-bengali" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="card-typing-sound-title">১. টাইপিং ও শব্দ কনফিগারেশন</h3>
+                  <p class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 2px;" data-i18n="card-typing-sound-desc">শর্টকাট কি নির্বাচন, টাইপিং অডিও প্রতিক্রিয়া ও ভলিউম নিয়ন্ত্রণ</p>
+                </div>
+                <label class="toggle-switch" title="Toggle typing sound effects">
+                  <input type="checkbox" id="setting-sound-enabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Shortcut Configuration -->
+              <div style="margin-bottom: 1.25rem;">
+                <label class="section-label" data-i18n="shortcuts-title" style="margin-bottom: 0.5rem; display: block;">ভাষা পরিবর্তনের শর্টকাট (Language Toggle Shortcut)</label>
+                <div id="shortcut-conflict-warning" class="shortcut-conflict-banner hidden" style="margin-bottom: 0.5rem;"></div>
+                <div class="shortcuts-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+                  <div class="glass-pill shortcut-pill active" data-shortcut="ctrl-space" style="padding: 0.65rem 0.85rem; border-radius: var(--radius-xl); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                    <span class="font-mono" style="font-size: 0.75rem; font-weight: 600; color: #ffffff;">Ctrl + Space</span>
+                    <span class="shortcut-indicator" style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--brand-accent);"></span>
+                  </div>
+                  <div class="glass-pill shortcut-pill" data-shortcut="f12" style="padding: 0.65rem 0.85rem; border-radius: var(--radius-xl); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                    <span class="font-mono" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;">F12 Key</span>
+                    <span class="shortcut-indicator" style="width: 7px; height: 7px; border-radius: 50%; background-color: #52525b;"></span>
+                  </div>
+                  <div class="glass-pill shortcut-pill" data-shortcut="shift-space" style="padding: 0.65rem 0.85rem; border-radius: var(--radius-xl); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                    <span class="font-mono" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;">Shift + Space</span>
+                    <span class="shortcut-indicator" style="width: 7px; height: 7px; border-radius: 50%; background-color: #52525b;"></span>
+                  </div>
+                  <div id="shortcut-custom-pill" class="glass-pill shortcut-pill" data-shortcut="custom" style="padding: 0.65rem 0.85rem; border-radius: var(--radius-xl); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                    <span id="shortcut-custom-label" class="font-mono" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;" data-i18n="shortcut-custom-btn">Custom...</span>
+                    <span class="shortcut-indicator" style="width: 7px; height: 7px; border-radius: 50%; background-color: #52525b;"></span>
+                  </div>
+                </div>
+                <!-- Custom Shortcut Recorder input (revealed when custom chosen or clicked) -->
+                <div id="custom-shortcut-recorder" class="glass-input hidden" style="margin-top: 0.65rem; padding: 0.6rem 0.85rem; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+                    <span class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa;" data-i18n="record-shortcut-prompt">নতুন শর্টকাট চাপুন (যেমন Ctrl+Alt+K):</span>
+                    <input id="custom-shortcut-input" type="text" class="font-mono glass-input" style="padding: 0.25rem 0.65rem; border-radius: var(--radius-md); font-size: 0.75rem; width: 140px; text-align: center; color: var(--brand-accent); font-weight: 700;" placeholder="Press Keys..." readonly>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button id="btn-save-custom-shortcut" class="btn-glass btn-primary font-bengali" style="padding: 0.25rem 0.75rem; font-size: 0.6875rem;" data-i18n="btn-save">সংরক্ষণ</button>
+                    <button id="btn-cancel-custom-shortcut" class="btn-glass font-bengali" style="padding: 0.25rem 0.75rem; font-size: 0.6875rem;" data-i18n="btn-cancel">বাতিল</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Typing Sound & Volume Controls -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                <!-- Sound Profile Select -->
+                <div>
+                  <label class="font-bengali" style="display: block; font-size: 0.75rem; color: #a1a1aa; margin-bottom: 0.4rem;" data-i18n="sound-profile-label">টাইপিং সাউন্ড প্রোফাইল:</label>
+                  <div class="glass-select-wrapper">
+                    <select id="setting-sound-profile" class="glass-select">
+                      <option value="normal" selected>Normal Chiclet Default (সফট ক্লিক - ডিফল্ট)</option>
+                      <option value="tactile">Tactile Mechanical (ক্ল্যাকি ব্লু সুইচ)</option>
+                      <option value="typewriter">Classic Typewriter (ভিন্টেজ টাইপরাইটার)</option>
+                      <option value="membrane">Soft Membrane (কুশন্ড ডোম)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Volume Control & Audition -->
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa;" data-i18n="sound-volume-label">ভলিউম স্তর (Default 20%):</span>
+                    <span id="sound-volume-val-label" class="font-mono" style="font-size: 0.75rem; color: var(--brand-accent); font-weight: 700;">20%</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <input type="range" id="setting-sound-volume" min="0" max="100" value="20" style="flex: 1;">
+                    <button id="btn-test-sound" class="glass-btn test-sound-btn" type="button" title="Audition currently selected typing sound" style="padding: 0.4rem 0.85rem; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
+                      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                      <span data-i18n="sound-test-btn">শব্দ পরীক্ষা</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 2: APPEARANCE & THEMES -->
+            <div id="settings-card-appearance" class="settings-card glass-panel" style="padding: 1.25rem; border-radius: var(--radius-2xl);">
+              <div class="settings-card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <h3 class="font-bengali" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="card-appearance-title">২. চেহারা ও থিম পারসোনালাইজেশন</h3>
+                <p class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 2px;" data-i18n="card-appearance-desc">৬টি পূর্ণাঙ্গ থিম প্যালেট, নিজস্ব অ্যাকসেন্ট কালার এবং ডক স্টাইল ওভারভিউ</p>
+              </div>
+
+              <!-- Theme Presets Grid -->
+              <div style="margin-bottom: 1rem;">
+                <label class="section-label" data-i18n="theme-select-title" style="margin-bottom: 0.5rem; display: block;">থিম নির্বাচন (Theme Palette)</label>
+                <div class="theme-grid">
+                  <div id="theme-tile-default" class="glass-pill theme-tile active" onclick="selectThemePreset('default')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #f97316;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 700; color: #ffffff;" data-i18n="theme-default">ডিফল্ট অরেঞ্জ</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #a1a1aa;">Tactile Orange</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="theme-tile-oled" class="glass-pill theme-tile" onclick="selectThemePreset('oled')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #ffffff;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #e4e4e7;" data-i18n="theme-oled">পিওর ওএলইডি ডার্ক</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #71717a;">Deep Black</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="theme-tile-nordic" class="glass-pill theme-tile" onclick="selectThemePreset('nordic')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #38bdf8;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #e4e4e7;" data-i18n="theme-nordic">নর্ডিক লাইট ব্লু</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #71717a;">Nordic Frosted</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="theme-tile-ivory" class="glass-pill theme-tile" onclick="selectThemePreset('ivory')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #d97706;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #e4e4e7;" data-i18n="theme-ivory">ওয়ার্ম আইভরি</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #71717a;">Paper Warmth</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="theme-tile-sunset" class="glass-pill theme-tile" onclick="selectThemePreset('sunset')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #ea580c;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #e4e4e7;" data-i18n="theme-sunset">সানসেট অ্যাম্বার</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #71717a;">Sunset Amber</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="theme-tile-emerald" class="glass-pill theme-tile" onclick="selectThemePreset('emerald')">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                      <span class="color-dot" style="background-color: #10b981;"></span>
+                      <div>
+                        <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #e4e4e7;" data-i18n="theme-emerald">এমারেল্ড নিয়ন</div>
+                        <div class="font-mono" style="font-size: 0.5625rem; color: #71717a;">Cyber Slate</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Theme Customizer Sliders -->
+              <div class="customizer-box" style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                  <span class="font-bengali" style="font-size: 0.75rem; font-weight: 700; color: #ffffff;" data-i18n="customize-theme-title">থিম ফাইন-টিউনিং</span>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <label class="font-bengali" style="font-size: 0.6875rem; color: #a1a1aa;" data-i18n="accent-picker-label">অ্যাকসেন্ট কালার:</label>
+                    <input type="color" id="accent-color-picker" value="#f97316" oninput="setCustomAccent(this.value)" style="width: 24px; height: 24px; border: none; background: transparent; cursor: pointer; border-radius: 4px;">
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="slider-row">
+                    <div class="slider-header">
+                      <span class="font-bengali" data-i18n="slider-opacity">গ্লাস অস্বচ্ছতা (Opacity)</span>
+                      <span id="opacity-val-label" class="font-mono" style="color: var(--brand-accent);">50%</span>
+                    </div>
+                    <input type="range" id="slider-opacity" min="20" max="100" value="50" oninput="updateOpacity(this.value)">
+                  </div>
+                  <div class="slider-row">
+                    <div class="slider-header">
+                      <span class="font-bengali" data-i18n="slider-blur">ব্লার গভীরতা (Blur Intensity)</span>
+                      <span id="blur-val-label" class="font-mono" style="color: var(--brand-accent);">24px</span>
+                    </div>
+                    <input type="range" id="slider-blur" min="0" max="40" value="24" oninput="updateBlur(this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- App Logo Selection -->
+              <div style="margin-bottom: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                <label class="section-label" data-i18n="icon-select-title" style="margin-bottom: 0.5rem; display: block;">অ্যাপ্লিকেশন ব্র্যান্ড আইকন (App Logo Variant)</label>
+                <div class="icon-grid">
+                  <div id="icon-tile-orange" class="icon-tile active" onclick="setAppLogo('orange')">
+                    <img src="./assets/logos/logo-orange.png" class="icon-tile-img" alt="Signature Orange Icon">
+                    <div>
+                      <div style="font-size: 0.8125rem; font-weight: 700; color: #ffffff;" data-i18n="icon-orange-label">সিগনেচার অরেঞ্জ</div>
+                      <div style="font-size: 0.625rem; color: #a1a1aa;" class="font-mono" data-i18n="icon-orange-sub">ডিফল্ট ক্লাসিক</div>
+                    </div>
+                  </div>
+                  <div id="icon-tile-dark" class="icon-tile" onclick="setAppLogo('dark')">
+                    <img src="./assets/logos/logo-dark.png" class="icon-tile-img" alt="Obsidian Dark Icon">
+                    <div>
+                      <div style="font-size: 0.8125rem; font-weight: 700; color: #ffffff;" data-i18n="icon-dark-label">অবসিডিয়ান ডার্ক</div>
+                      <div style="font-size: 0.625rem; color: #a1a1aa;" class="font-mono" data-i18n="icon-dark-sub">স্টিলথ ব্ল্যাক</div>
+                    </div>
+                  </div>
+                  <div id="icon-tile-white" class="icon-tile" onclick="setAppLogo('white')">
+                    <img src="./assets/logos/logo-white.png" class="icon-tile-img" alt="Pure Ivory Icon">
+                    <div>
+                      <div style="font-size: 0.8125rem; font-weight: 700; color: #ffffff;" data-i18n="icon-light-label">পিউর আইভরি</div>
+                      <div style="font-size: 0.625rem; color: #a1a1aa;" class="font-mono" data-i18n="icon-light-sub">মডার্ন ক্লিন</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Top Dock Variants Overview -->
+              <div style="padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                <label class="section-label" data-i18n="dock-variants-title" style="margin-bottom: 0.5rem; display: block;">টপ ডক ও স্ট্যাটাস বার ভ্যারিয়েন্ট ওভারভিউ (৫টি স্টাইল)</label>
+                <!-- Live Preview Canvas -->
+                <div id="dock-preview-container" class="dock-preview-canvas glass-input" style="margin-bottom: 0.75rem;">
+                  <div id="dock-preview-v1" class="glass-panel" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 9999px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding-right: 0.75rem; border-right: 1px solid rgba(255,255,255,0.1);">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--brand-accent);"></span>
+                      <span class="font-bengali" style="font-size: 0.8125rem; font-weight: 700; color: #ffffff;">বাংলা</span>
+                    </div>
+                    <div class="font-mono" style="font-size: 0.75rem; color: #a1a1aa; display: flex; align-items: center; gap: 0.5rem;">
+                      <span>Avro Phonetic</span>
+                      <span style="font-size: 0.625rem; padding: 0.125rem 0.375rem; border-radius: 4px; background: rgba(255,255,255,0.1); color: #e4e4e7;">Space</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.35rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.1); font-size: 0.625rem; color: #34d399;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #34d399;"></span>
+                      <span>Active</span>
+                    </div>
+                  </div>
+                  <div id="dock-preview-v2" class="hidden" style="align-items: center; gap: 0.65rem; padding: 0.4rem 0.85rem; border-radius: 9999px; background: #000000; border: 1px solid #3f3f46; box-shadow: 0 15px 30px rgba(0,0,0,0.8);">
+                    <span class="font-bengali font-mono" style="padding: 0.125rem 0.5rem; border-radius: 4px; background: #27272a; font-size: 0.6875rem; font-weight: 700; color: var(--brand-accent);">বাং</span>
+                    <span class="font-mono" style="font-size: 0.75rem; color: #e4e4e7;">OLED Nano</span>
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22d3ee;"></span>
+                  </div>
+                  <div id="dock-preview-v3" class="hidden" style="align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.65rem 1.25rem; border-radius: 1rem; background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.2); min-width: 280px;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #f87171;"></span>
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #facc15;"></span>
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #4ade80;"></span>
+                    </div>
+                    <span class="font-bengali" style="font-size: 0.75rem; font-weight: 600; color: #ffffff;">ম্যাক ওএস আইল্যান্ড</span>
+                    <span class="font-mono" style="font-size: 0.625rem; padding: 0.15rem 0.5rem; border-radius: 9999px; background: rgba(249, 115, 22, 0.2); color: var(--brand-accent);">v1.0.0</span>
+                  </div>
+                  <div id="dock-preview-v4" class="hidden" style="align-items: center; gap: 0.5rem; padding: 0.4rem; border-radius: 0.75rem; background: linear-gradient(to bottom, #27272a, #09090b); border: 1px solid #52525b; box-shadow: 0 6px 16px rgba(0,0,0,0.8);">
+                    <div class="font-bengali" style="padding: 0.25rem 0.75rem; border-radius: 4px; background: #3f3f46; font-size: 0.75rem; font-weight: 700; color: #ffffff; border-bottom: 2px solid #18181b;">অভ্র</div>
+                    <div class="font-bengali" style="padding: 0.25rem 0.75rem; border-radius: 4px; background: #27272a; font-size: 0.75rem; color: #a1a1aa; border-bottom: 2px solid #09090b;">বিজয়</div>
+                    <div class="font-mono" style="padding: 0.25rem 0.75rem; border-radius: 4px; background-color: var(--brand-accent); font-size: 0.75rem; font-weight: 700; color: #ffffff; border-bottom: 2px solid rgba(0,0,0,0.4);">F12</div>
+                  </div>
+                  <div id="dock-preview-v5" class="hidden" style="align-items: center; gap: 0.5rem; padding: 0.35rem 0.75rem; border-radius: 0.5rem; background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.6);">
+                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #34d399;"></div>
+                    <span class="font-mono" style="font-size: 0.6875rem; color: #e4e4e7; font-weight: 600;">BN / AVRO</span>
+                  </div>
+                </div>
+                <!-- 5 Selectable Cards -->
+                <div class="dock-variants-grid">
+                  <div id="dock-card-1" class="glass-pill dock-variant-card active" onclick="setDockVariant(1)">
+                    <div class="font-bengali" style="font-size: 0.75rem; font-weight: 700; color: #ffffff;" data-i18n="dock-v1-label">স্লিম সার্চবার</div>
+                    <div class="font-mono" style="font-size: 0.5625rem; color: #a1a1aa; margin-top: 2px;">Slim Bar</div>
+                  </div>
+                  <div id="dock-card-2" class="glass-pill dock-variant-card" onclick="setDockVariant(2)">
+                    <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;" data-i18n="dock-v2-label">ন্যানো ক্যাপসুল</div>
+                    <div class="font-mono" style="font-size: 0.5625rem; color: #71717a; margin-top: 2px;">OLED Nano</div>
+                  </div>
+                  <div id="dock-card-3" class="glass-pill dock-variant-card" onclick="setDockVariant(3)">
+                    <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;" data-i18n="dock-v3-label">ম্যাক ওএস ডক</div>
+                    <div class="font-mono" style="font-size: 0.5625rem; color: #71717a; margin-top: 2px;">macOS Frosted</div>
+                  </div>
+                  <div id="dock-card-4" class="glass-pill dock-variant-card" onclick="setDockVariant(4)">
+                    <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;" data-i18n="dock-v4-label">মেকানিক্যাল</div>
+                    <div class="font-mono" style="font-size: 0.5625rem; color: #71717a; margin-top: 2px;">Tactile Keypad</div>
+                  </div>
+                  <div id="dock-card-5" class="glass-pill dock-variant-card" onclick="setDockVariant(5)">
+                    <div class="font-bengali" style="font-size: 0.75rem; font-weight: 500; color: #d4d4d8;" data-i18n="dock-v5-label">মাইক্রো ব্যাজ</div>
+                    <div class="font-mono" style="font-size: 0.5625rem; color: #71717a; margin-top: 2px;">Floating Micro</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: SYSTEM & STORAGE -->
+            <div id="settings-card-system" class="settings-card glass-panel" style="padding: 1.25rem; border-radius: var(--radius-2xl);">
+              <div class="settings-card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <h3 class="font-bengali" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="card-system-title">৩. সিস্টেম ও স্টোরেজ ম্যানেজমেন্ট</h3>
+                <p class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 2px;" data-i18n="card-system-desc">কনফিগারেশন ব্যাকআপ ও রিস্টোর এবং উইন্ডোজ স্টার্টআপ আচরণ</p>
+              </div>
+
+              <!-- Backup & Restore -->
+              <div style="margin-bottom: 1.25rem;">
+                <div style="margin-bottom: 0.5rem;">
+                  <div class="font-bengali" style="font-size: 0.8125rem; font-weight: 600; color: #ffffff;" data-i18n="backup-title">সেটিংস ব্যাকআপ ও পুনরুদ্ধার</div>
+                  <div class="font-bengali" style="font-size: 0.6875rem; color: #a1a1aa;" data-i18n="backup-desc">আপনার সকল পছন্দ ও কাস্টমাইজেশন JSON ফাইলে সংরক্ষণ বা রিস্টোর করুন</div>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                  <button id="btn-export-settings" class="glass-btn action-backup-btn" type="button" style="padding: 0.5rem 1rem;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    <span data-i18n="btn-export">ব্যাকআপ এক্সপোর্ট (JSON)</span>
+                  </button>
+                  <button id="btn-import-settings" class="glass-btn action-backup-btn" type="button" style="padding: 0.5rem 1rem;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    <span data-i18n="btn-import">ব্যাকআপ ইমপোর্ট (JSON)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Startup Toggle (AT THE BOTTOM of Card 3) -->
+              <div style="padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;" data-i18n="startup-title">কম্পিউটার চালুর সময় স্বয়ংক্রিয় স্টার্টআপ (Launch on Startup)</div>
+                  <div class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 2px;" data-i18n="startup-desc">কম্পিউটার বুট হওয়ার সাথে সাথে মাত্রা কীবোর্ড ব্যাকগ্রাউন্ডে স্বয়ংক্রিয়ভাবে চালু হবে</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="setting-auto-startup">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- CARD 4: ABOUT & DIAGNOSTICS -->
+            <div id="settings-card-about" class="settings-card glass-panel" style="padding: 1.25rem; border-radius: var(--radius-2xl);">
+              <div class="settings-card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 class="font-bengali" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="about-title">৪. মাত্রা কীবোর্ড পরিচিতি ও ডায়াগনস্টিক</h3>
+                  <p class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 2px;" data-i18n="about-desc">Windows প্ল্যাটফর্মের আধুনিক দেশীয় বাংলা কীবোর্ড ইঞ্জিন</p>
+                </div>
+                <span id="app-info-version" class="glass-pill font-mono" style="font-size: 0.6875rem; padding: 0.25rem 0.75rem; color: var(--brand-accent); font-weight: 700; border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.1);">v1.0.0</span>
+              </div>
+
+              <div class="about-grid">
+                <div class="about-item">
+                  <span class="about-label">Platform:</span>
+                  <span id="app-info-platform" class="about-value font-mono">WIN32 (x64)</span>
+                </div>
+                <div class="about-item">
+                  <span class="about-label">Runtime:</span>
+                  <span id="app-info-electron" class="about-value font-mono">Electron • Node</span>
+                </div>
+                <div class="about-item" style="grid-column: 1 / -1;">
+                  <span class="about-label" data-i18n="about-log-label">ডায়াগনস্টিক লগ ফাইল:</span>
+                  <span id="app-info-logpath" class="about-value font-mono" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">%APPDATA%/matra-keyboard/matra.log</span>
+                </div>
+              </div>
+
+              <div class="privacy-guarantee-box" style="margin-top: 1rem;">
+                <svg width="14" height="14" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span class="font-bengali" style="font-size: 0.6875rem; color: #a1a1aa;" data-i18n="about-privacy-badge">১০০% অফলাইন ও নিরাপদ (Zero Keystroke Logging • No Telemetry)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: FONT SELECTION SECTION -->
+        <div id="content-font" class="content-pane hidden">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="font-title">ফন্ট সিলেকশন ও রেন্ডারিং</h2>
+              <p class="pane-subtitle font-bengali" data-i18n="font-desc">সিস্টেম ও ওয়েব টাইপোগ্রাফি প্রিভিউ এবং কাস্টম ফন্ট পরিচালনা</p>
+            </div>
+          </div>
+
+          <!-- Font Scoping Notice Banner -->
+          <div class="glass-input font-scope-banner" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-xl); display: flex; align-items: center; gap: 0.75rem; border-left: 3px solid var(--brand-accent); background: rgba(249, 115, 22, 0.08);">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--brand-accent); flex-shrink: 0;"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span class="font-bengali" style="font-size: 0.75rem; color: #e4e4e7;" data-i18n="font-scope-notice">ফন্ট সিলেকশন কেবল টাইপিং স্টুডিও ও আউটপুট টেক্সটের ক্ষেত্রে প্রযোজ্য। অ্যাপ্লিকেশনের মূল ইউজার ইন্টারফেস টাইপোগ্রাফি অপরিবর্তিত থাকবে।</span>
+          </div>
+
+          <div class="settings-section">
+            <div class="section-label" data-i18n="standard-fonts-title">স্ট্যান্ডার্ড বাংলা ফন্ট তালিকা</div>
+            <div class="fonts-grid" id="fonts-container">
+              <!-- Font 1: Noto Sans Bengali (Google Fonts - Default) -->
+              <div class="glass-pill font-card active" data-font-name="Noto Sans Bengali">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">নোটো সান্স বাংলা (Noto Sans Bengali)</div>
+                  <span class="font-mono font-active-badge" data-original-type="Google Fonts" style="font-size: 0.625rem; text-transform: uppercase; background: rgba(249, 115, 22, 0.2); color: var(--brand-accent); padding: 0.15rem 0.5rem; border-radius: 4px;">Active</span>
+                </div>
+                <div class="font-bengali" style="font-size: 0.75rem; color: #d4d4d8; margin-top: 0.5rem; font-family: 'Noto Sans Bengali', sans-serif;">সর্বজনীন ও আন্তর্জাতিক মানের আধুনিক বাংলা টাইপোগ্রাফি রেন্ডারিং।</div>
+              </div>
+
+              <!-- Font 2: Hind Siliguri (Bundled Offline) -->
+              <div class="glass-pill font-card" data-font-name="Hind Siliguri">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">হিন্দ শিলিগুড়ি (Hind Siliguri)</div>
+                  <span class="font-mono font-active-badge" data-original-type="Bundled" style="font-size: 0.625rem; text-transform: uppercase; color: #71717a;">Bundled</span>
+                </div>
+                <div class="font-bengali" style="font-size: 0.75rem; color: #d4d4d8; margin-top: 0.5rem; font-family: 'Hind Siliguri', sans-serif;">আমাদের মনের কথা বাংলায় প্রকাশ পাক নির্দ্বিধায়।</div>
+              </div>
+
+              <!-- Font 3: Kalpurush -->
+              <div class="glass-pill font-card" data-font-name="Kalpurush">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">কালপুরুষ (Kalpurush)</div>
+                  <span class="font-mono font-active-badge" data-original-type="System" style="font-size: 0.625rem; text-transform: uppercase; color: #71717a;">System</span>
+                </div>
+                <div class="font-bengali" style="font-size: 0.75rem; color: #d4d4d8; margin-top: 0.5rem; font-family: 'Kalpurush', sans-serif;">আমার ভাইয়ের রক্তে রাঙানো একুশে ফেব্রুয়ারি।</div>
+              </div>
+
+              <!-- Font 4: SolaimanLipi -->
+              <div class="glass-pill font-card" data-font-name="SolaimanLipi">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">সোলায়মানলিপি (SolaimanLipi)</div>
+                  <span class="font-mono font-active-badge" data-original-type="Classic" style="font-size: 0.625rem; text-transform: uppercase; color: #71717a;">Classic</span>
+                </div>
+                <div class="font-bengali" style="font-size: 0.75rem; color: #d4d4d8; margin-top: 0.5rem; font-family: 'SolaimanLipi', sans-serif;">বাংলা বর্ণমালার ঐতিহ্য ও আধুনিক প্রযুক্তির মেলবন্ধন।</div>
+              </div>
+
+              <!-- Font 5: Siyam Rupali -->
+              <div class="glass-pill font-card" data-font-name="Siyam Rupali">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">সিয়াম রূপালী (Siyam Rupali)</div>
+                  <span class="font-mono font-active-badge" data-original-type="Web Safe" style="font-size: 0.625rem; text-transform: uppercase; color: #71717a;">Web Safe</span>
+                </div>
+                <div class="font-bengali" style="font-size: 0.75rem; color: #d4d4d8; margin-top: 0.5rem; font-family: 'Siyam Rupali', sans-serif;">মুক্ত ও স্বাধীন চিন্তার প্রকাশ হোক মাতৃভাষায়।</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Font Dropzone -->
+          <div class="glass-input" style="padding: 1.25rem; border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;" data-i18n="custom-font-heading">কাস্টম ফন্ট আপলোড ও যোগ করুন</div>
+                <div class="font-bengali" style="font-size: 0.6875rem; color: #a1a1aa;" data-i18n="custom-font-desc">আপনার নিজস্ব TTF, OTF অথবা WOFF2 ফন্ট ফাইল ড্র্যাগ করে ইনস্টল করুন</div>
+              </div>
+              <input type="file" id="font-file-input" class="hidden" accept=".ttf,.otf,.woff,.woff2">
+              <button id="btn-install-custom-font" class="btn-glass btn-primary font-bengali" data-i18n="btn-install-font">ফন্ট নির্বাচন করুন</button>
+            </div>
+            <div id="font-dropzone-box" class="font-dropzone">
+              <svg width="32" height="32" style="color: #71717a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+              <div class="font-bengali" style="font-size: 0.75rem; color: #e4e4e7;" data-i18n="font-drop-prompt">ফন্ট ফাইল এখানে ছেড়ে দিন অথবা ব্রাউজ করতে ক্লিক করুন</div>
+              <div class="font-mono" style="font-size: 0.625rem; color: #71717a;">Supports TTF, OTF, WOFF2 (Live Dynamic Registration)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: CUSTOM DICTIONARY -->
+        <div id="content-dict" class="content-pane hidden">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="dict-title">কাস্টম ডিকশনারি ও শব্দভাণ্ডার</h2>
+              <p class="pane-subtitle font-bengali" data-i18n="dict-desc">নতুন শব্দ ও ফনেটিক শর্টকাট যুক্ত করুন — টাইপিংয়ে স্বয়ংক্রিয় সাজেশন বুস্টিং সক্রিয়</p>
+            </div>
+            <span id="dict-words-count-badge" class="glass-pill font-mono" style="font-size: 0.75rem; padding: 0.35rem 0.85rem; color: var(--brand-accent); font-weight: 700;">০ টি শব্দ</span>
+          </div>
+
+          <!-- Add Word Card -->
+          <div class="glass-input" style="padding: 1.25rem; border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="font-bengali" style="font-size: 0.8125rem; font-weight: 700; color: #ffffff;" data-i18n="dict-add-heading">নতুন শব্দভাণ্ডার সংযোজন</div>
+            <div style="display: grid; grid-template-columns: 1.5fr 1.2fr auto; gap: 0.75rem; align-items: center;">
+              <input id="dict-word-input" type="text" class="glass-input font-bengali" style="padding: 0.65rem 1rem; border-radius: var(--radius-xl); font-size: 0.875rem; color: #ffffff; outline: none;" placeholder="বাংলা শব্দ (যেমন: মাতৃভাষা)..." data-i18n-ph="dict-word-ph">
+              <input id="dict-key-input" type="text" class="glass-input font-mono" style="padding: 0.65rem 1rem; border-radius: var(--radius-xl); font-size: 0.8125rem; color: #ffffff; outline: none;" placeholder="ফোনেটিক কি (যেমন: matribhasha - ঐচ্ছিক)..." data-i18n-ph="dict-key-ph">
+              <button id="btn-add-dict-word" class="btn-glass btn-primary font-bengali" style="padding: 0.65rem 1.25rem; white-space: nowrap;" data-i18n="dict-add-btn">শব্দ যোগ করুন</button>
+            </div>
+          </div>
+
+          <!-- Search Filter Bar -->
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div style="position: relative; flex: 1;">
+              <input id="dict-search-input" type="text" class="glass-input font-bengali" style="width: 100%; padding: 0.55rem 1rem 0.55rem 2.25rem; border-radius: var(--radius-xl); font-size: 0.8125rem; color: #ffffff; outline: none;" placeholder="ডিকশনারিতে শব্দ খুঁজুন..." data-i18n-ph="dict-search-ph">
+              <svg width="14" height="14" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: #71717a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+          </div>
+
+          <!-- Entries List Container -->
+          <div id="dict-entries-list" class="dict-list-container">
+            <!-- Rendered by dictionaryManager.js -->
+          </div>
+        </div>
+
+        <!-- TAB 5: SCRIPT CONVERTER -->
+        <div id="content-converter" class="content-pane hidden">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="converter-title">লিপি রূপান্তরকারী (ANSI থেকে Unicode)</h2>
+              <p class="pane-subtitle font-bengali" data-i18n="converter-desc">বিজয় ও ইউনিকোড উভয় ফরম্যাটে তাৎক্ষণিক দ্বিমুখী রূপান্তর করুন</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <span id="converter-direction-badge" class="glass-pill font-bengali" style="font-size: 0.75rem; padding: 0.35rem 0.85rem; color: var(--brand-accent); font-weight: 700;">বিজয় (ANSI) ➔ ইউনিকোড</span>
+              <button id="btn-swap-converter" class="btn-glass font-bengali" style="padding: 0.35rem 0.85rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem;" title="Swap conversion direction">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span data-i18n="converter-swap-btn">দিক পরিবর্তন</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="converter-workspace">
+            <!-- Source Pane -->
+            <div class="converter-pane">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label id="converter-source-label" class="font-bengali" style="font-size: 0.75rem; font-weight: 600; color: #a1a1aa;" data-i18n="converter-src-label">বিজয় / ANSI সোর্স টেক্সট:</label>
+                <span id="converter-src-stats" class="font-mono" style="font-size: 0.6875rem; color: #71717a;">০ বর্ণ • ০ শব্দ</span>
+              </div>
+              <textarea id="converter-source-input" class="glass-input converter-textarea font-bengali" placeholder="এখানে বিজয় বা অ্যানসি টেক্সট পেস্ট করুন..." data-i18n-ph="converter-input-ph"></textarea>
+            </div>
+
+            <!-- Target Pane -->
+            <div class="converter-pane">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label id="converter-target-label" class="font-bengali" style="font-size: 0.75rem; font-weight: 600; color: #a1a1aa;" data-i18n="converter-target-label">ইউনিকোড বাংলা ফলাফল:</label>
+                <span id="converter-target-stats" class="font-mono" style="font-size: 0.6875rem; color: #71717a;">০ বর্ণ • ০ শব্দ</span>
+              </div>
+              <textarea id="converter-target-output" class="glass-input converter-textarea font-bengali" style="background: rgba(0,0,0,0.4);" placeholder="ইউনিকোড ফলাফল এখানে আসবে..." data-i18n-ph="converter-output-ph" readonly></textarea>
+            </div>
+          </div>
+
+          <!-- Action Toolbar -->
+          <div class="converter-toolbar">
+            <div style="display: flex; gap: 0.75rem;">
+              <button id="btn-copy-converted" class="btn-glass btn-primary font-bengali" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem; display: flex; align-items: center; gap: 0.4rem;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span data-i18n="converter-copy-btn">কপি করুন</span>
+              </button>
+              <button id="btn-clear-converted" class="btn-glass font-bengali" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem; display: flex; align-items: center; gap: 0.4rem;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span data-i18n="converter-clear-btn">মুছুন</span>
+              </button>
+            </div>
+            <button id="btn-sample-converted" class="btn-glass font-bengali" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem;">
+              <span data-i18n="converter-sample-btn">নমুনা টেক্সট লোড করুন</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 6: SYSTEM CARE & DIAGNOSTICS -->
+        <div id="content-care" class="content-pane hidden">
+          <div class="pane-header">
+            <div>
+              <h2 class="pane-title font-bengali" data-i18n="care-title">সিস্টেম কেয়ার ও ইঞ্জিন ডায়াগনস্টিক</h2>
+              <p class="pane-subtitle font-bengali" data-i18n="care-desc">মাত্রা কীবোর্ডের কোর হেলথ চেক, ক্যাশ ম্যানেজমেন্ট ও পারফরম্যান্স অপ্টিমাইজেশন</p>
+            </div>
+            <button id="btn-care-refresh" class="btn-glass font-bengali" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <span data-i18n="care-refresh-btn">রিফ্রেশ</span>
+            </button>
+          </div>
+
+          <!-- Section 1: Health Cards Grid -->
+          <div class="care-health-grid">
+            <!-- Lexicon Card -->
+            <div class="care-card">
+              <div class="care-card-header">
+                <div class="care-card-icon">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </div>
+                <div>
+                  <div class="care-card-title font-bengali" data-i18n="care-lexicon-title">ফনেটিক অভিধান ও ইন্ডেক্স</div>
+                  <div id="care-lexicon-count" class="care-card-value font-mono">১৫০+ শব্দ (সক্রিয়)</div>
+                </div>
+              </div>
+              <div class="care-card-desc font-bengali">কোর লেক্সিকন ও ইউজার কাস্টম ডিকশনারির হ্যাশ ম্যাপ মেমরিতে লোড করা আছে।</div>
+            </div>
+
+            <!-- Online API Latency Ping Card -->
+            <div class="care-card">
+              <div class="care-card-header" style="justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                  <div class="care-card-icon">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </div>
+                  <div>
+                    <div class="care-card-title font-bengali" data-i18n="care-ping-title">অনলাইন এপিআই সংযোগ</div>
+                    <div id="care-ping-status" class="care-card-value font-mono">যাচাই করুন</div>
+                  </div>
+                </div>
+                <button id="btn-care-ping" class="glass-btn font-bengali" style="padding: 0.35rem 0.75rem; font-size: 0.6875rem;" data-i18n="care-ping-btn">সংযোগ পরীক্ষা</button>
+              </div>
+              <div class="care-card-desc font-bengali">গুগল ইনপুট টুলস সার্ভিস রেসপন্স টাইম ও লাইভ লেটেন্সি পরিমাপ।</div>
+            </div>
+
+            <!-- Global Hook Card -->
+            <div class="care-card">
+              <div class="care-card-header">
+                <div class="care-card-icon">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </div>
+                <div>
+                  <div class="care-card-title font-bengali" data-i18n="care-hook-title">সিস্টেম গ্লোবাল শর্টকাট</div>
+                  <div id="care-hook-status" class="care-card-value font-mono">CTRL+SPACE (সক্রিয়)</div>
+                </div>
+              </div>
+              <div class="care-card-desc font-bengali">উইন্ডোজ ব্যাকগ্রাউন্ড শর্টকাট রেজিস্ট্রি ও কোনো সংঘর্ষ (Collision) আছে কিনা পর্যবেক্ষণ।</div>
+            </div>
+
+            <!-- Memory & Uptime Card -->
+            <div class="care-card">
+              <div class="care-card-header">
+                <div class="care-card-icon">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </div>
+                <div>
+                  <div class="care-card-title font-bengali" data-i18n="care-mem-title">রিসোর্স ও মেমরি ব্যবহার</div>
+                  <div class="care-card-value font-mono"><span id="care-mem-usage">Active</span> • <span id="care-uptime">0 মিনিট</span></div>
+                </div>
+              </div>
+              <div class="care-card-desc font-bengali">ইলেক্ট্রন ও নোড ইঞ্জিন সেশনের মেমরি রিয়েলটাইম নিরীক্ষণ।</div>
+            </div>
+          </div>
+
+          <!-- Section 2: Cache & Temporary Buffers Optimizer -->
+          <div class="glass-input" style="padding: 1.25rem; border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;" data-i18n="care-cache-title">মেমরি ক্যাশ ও টাইপিং বাফার অপ্টিমাইজার</div>
+              <div class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.2rem;" data-i18n="care-cache-desc">অনলাইন প্রম্পট ক্যাশ ও ক্ষণস্থায়ী টোকেন ডেটা তাৎক্ষণিক মুক্ত করে অ্যাপকে দ্রুততর রাখুন</div>
+              <div class="font-mono" style="font-size: 0.6875rem; color: #71717a; margin-top: 0.35rem;">বর্তমান ক্যাশ স্ট্যাটাস: <span id="care-cache-status" style="color: #34d399;">স্বাভাবিক (Clean)</span></div>
+            </div>
+            <button id="btn-care-clear-cache" class="btn-glass btn-primary font-bengali" style="padding: 0.6rem 1.25rem; white-space: nowrap;" data-i18n="care-cache-btn">ক্লিয়ার ক্যাশ ও বাফার</button>
+          </div>
+
+          <!-- Section 3: Data Integrity & Storage Verifier -->
+          <div class="glass-input" style="padding: 1.25rem; border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;" data-i18n="care-integrity-title">ডাটাবেজ ও ফাইল ইন্টিগ্রিটি ভেরিফায়ার</div>
+              <div class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.2rem;" data-i18n="care-integrity-desc">সেটিংস ফাইল ও কাস্টম ডিকশনারির গঠনগত বৈধতা এবং সম্ভাব্য করাপশন চেক করুন</div>
+              <div class="font-mono" style="font-size: 0.6875rem; color: #71717a; margin-top: 0.35rem;">ফাইল অবস্থা: <span id="care-db-status" style="color: #e4e4e7;">সচল (JSON Local)</span> • <span id="care-integrity-result" style="color: #34d399;">যাচাই প্রস্তুত</span></div>
+            </div>
+            <button id="btn-care-verify-integrity" class="btn-glass font-bengali" style="padding: 0.6rem 1.25rem; white-space: nowrap;" data-i18n="care-integrity-btn">ইন্টিগ্রিটি পরীক্ষা করুন</button>
+          </div>
+
+          <!-- Section 4: Engine Soft Reset -->
+          <div class="glass-input" style="padding: 1.25rem; border-radius: var(--radius-2xl); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div class="font-bengali" style="font-size: 0.875rem; font-weight: 700; color: #ffffff;" data-i18n="care-reset-title">ইঞ্জিন রিসেট ও সার্ভিস রিস্টার্ট</div>
+              <div class="font-bengali" style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.2rem;" data-i18n="care-reset-desc">আপনার সেভ করা সেটিংস ও ডিকশনারি অক্ষত রেখে মাত্রা টাইপিং পাইপলাইন ফ্রেশ স্টেটে ফিরিয়ে আনুন</div>
+            </div>
+            <button id="btn-care-reset-engine" class="btn-glass font-bengali" style="padding: 0.6rem 1.25rem; white-space: nowrap; color: #f87171; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1);" data-i18n="care-reset-btn">ইঞ্জিন রিসেট করুন</button>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- First-Run Onboarding Modal (Section 21) -->
+  <div id="onboarding-modal" class="onboarding-overlay hidden">
+    <div class="onboarding-card glass-panel font-bengali">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <img src="./assets/logos/logo-orange.png" style="width: 3.5rem; height: 3.5rem; border-radius: var(--radius-xl); box-shadow: 0 4px 12px rgba(0,0,0,0.5);" alt="Matra Keyboard Logo">
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: #ffffff;" data-i18n="onboarding-title">মাত্রা কীবোর্ডে স্বাগতম</h2>
+          <p style="font-size: 0.8125rem; color: #a1a1aa; margin-top: 2px;" data-i18n="onboarding-desc">Windows-এ দ্রুত ও সাবলীল বাংলা টাইপিং শুরু করতে প্রস্তুত।</p>
+        </div>
+      </div>
+
+      <div class="glass-input" style="padding: 1rem; border-radius: var(--radius-2xl); display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.8125rem;">
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+          <span style="color: var(--brand-accent); font-weight: 700; font-size: 1rem;">1.</span>
+          <span style="color: #e4e4e7;" data-i18n="onboarding-tip1">ট্রে আইকন থেকে যেকোনো সময় কীবোর্ড ইন্টারফেস অ্যাক্সেস করুন।</span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+          <span style="color: var(--brand-accent); font-weight: 700; font-size: 1rem;">2.</span>
+          <span style="color: #e4e4e7;" data-i18n="onboarding-tip2">যেকোনো অ্যাপ্লিকেশনে বাংলা টাইপিং চালু করতে Ctrl+Space বা F12 ব্যবহার করুন।</span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+          <span style="color: var(--brand-accent); font-weight: 700; font-size: 1rem;">3.</span>
+          <span style="color: #e4e4e7;" data-i18n="onboarding-tip3">উচ্চতর বা অ্যাডমিনিস্ট্রেটর উইন্ডোতে টাইপ করতে মাত্রা কীবোর্ড অ্যাডমিনিস্ট্রেটর হিসেবে চালু করুন।</span>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <button id="btn-dismiss-onboarding" class="btn-glass btn-primary font-bengali" style="padding: 0.65rem 1.5rem; font-size: 0.875rem;" onclick="dismissOnboarding()" data-i18n="onboarding-btn">
+          টাইপিং শুরু করুন
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Virtual Keyboard Layout Visualizer Modal (Section 9 & DESIGN.md) -->
+  <div id="virtual-keyboard-modal" class="virtual-keyboard-overlay hidden">
+    <div class="virtual-keyboard-card glass-panel font-bengali">
+      <div class="vk-header">
+        <div class="vk-title-group">
+          <div class="vk-icon-pill">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </div>
+          <div>
+            <h3 class="vk-title" data-i18n="vk-title">ভার্চুয়াল কীবোর্ড লেআউট ভিউয়ার</h3>
+            <p class="vk-subtitle" data-i18n="vk-subtitle">লাইভ কীবোর্ড ম্যাট্রিক্স ও বর্ণমালার দ্বৈত ভিউ</p>
+          </div>
+        </div>
+        <div class="vk-controls">
+          <div class="vk-layout-switch">
+            <button id="vk-switch-avro" class="vk-layout-btn active" onclick="setAppLayout('avro')">ফোনেটিক</button>
+            <button id="vk-switch-bijoy" class="vk-layout-btn" onclick="setAppLayout('bijoy')">বিজয়</button>
+            <button id="vk-switch-probhat" class="vk-layout-btn" onclick="setAppLayout('probhat')">প্রভাত</button>
+          </div>
+          <button class="vk-shift-btn" id="vk-shift-toggle" onclick="toggleVirtualShift()" title="Toggle Shift State">
+            <span class="font-mono text-xs">⇧ Shift</span>
+          </button>
+          <button class="icon-btn vk-close-btn" onclick="closeLayoutViewer()" title="Close Viewer">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Keyboard Matrix Container -->
+      <div id="vk-matrix" class="vk-matrix">
+        <!-- Rendered by layoutViewer.js -->
+      </div>
+
+      <div class="vk-footer font-bengali">
+        <span class="vk-hint" data-i18n="vk-hint">কী চাপুন অথবা কীবোর্ডে টাইপ করুন — লাইভ ইলুমিনেশন সক্রিয়</span>
+        <span class="vk-layout-name font-mono" id="vk-active-layout-badge">Avro Phonetic</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="./scripts/app.js"></script>
+</body>
+</html>

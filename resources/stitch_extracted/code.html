@@ -1,0 +1,1163 @@
+<!DOCTYPE html><html class="dark" lang="bn" style="--brand-accent: #d97706; --glass-blur: 20px; --glass-opacity: 0.41;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Matra Keyboard - Refined Glassmorphic Master Edition</title>
+<!-- Google Fonts: Plus Jakarta Sans, Hind Siliguri, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Forms & Container Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c'
+            },
+            obsidian: {
+              950: '#07080b',
+              900: '#0e1017',
+              850: '#14161f',
+              800: '#1a1d28'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'sans-serif'],
+            bengali: ['"Hind Siliguri"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+<!-- CSS: Glassmorphism Variables & Base Styling -->
+<style data-purpose="glass-theme-variables">
+    :root {
+      --glass-opacity: 0.50;
+      --glass-blur: 24px;
+      --brand-accent: #f97316;
+      --glass-bg: rgba(22, 23, 29, var(--glass-opacity));
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-inner-highlight: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
+      --specular-glow: radial-gradient(circle at 50% -20%, rgba(249, 115, 22, 0.18), transparent 70%);
+    }
+
+    body {
+      background-color: #07080b;
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(249, 115, 22, 0.04) 0px, transparent 70%);
+      background-attachment: fixed;
+    }
+
+    .glass-panel {
+      background: rgba(22, 23, 29, var(--glass-opacity));
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-inner-highlight), 0 20px 48px -12px rgba(0, 0, 0, 0.75);
+    }
+
+    .glass-popover {
+      background: rgba(18, 19, 24, calc(var(--glass-opacity) + 0.15));
+      backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(190%);
+      -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.16), 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+    }
+
+    .glass-input {
+      background: rgba(12, 13, 17, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Custom range styling */
+    input[type=range] {
+      accent-color: var(--brand-accent);
+    }
+
+    /* Caret blink */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .caret-pulse {
+      animation: blink 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="text-zinc-100 flex flex-col min-h-screen antialiased select-none">
+<!-- BEGIN: TopHeader -->
+<header class="sticky top-0 z-40 w-full px-6 py-3 border-b border-white/10 bg-obsidian-950/70 backdrop-blur-xl">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<!-- Left: Logo & Application Name -->
+<div class="flex items-center space-x-3.5">
+<div class="relative w-9 h-9 rounded-xl overflow-hidden shadow-lg ring-1 ring-white/20 flex-shrink-0">
+<img alt="Matra Keyboard Logo" class="w-full h-full object-cover" id="header-app-logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPnHd_WcXbBHjtWoIjleehwEoSDCYgXNcoXu3nfXk_JCKS89EixjEbjszELtgYJJ_2NLhRH_J_TJhaqAg1z2rBbm-HwIM5JxsYYy7mo8ri_ReAoZkyo52GASx1xpeMluOALiUBSEOvSduozbOt-M35SF87gs8WUWnDnUPXKAboRT37Li473v6hvZ97iRXZii81rGbVn02iUZw5pLmjzSsM6Pqg_n25QaicepM2NCoD2DsJ_JPnIX35">
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base tracking-tight text-white flex items-center gap-2">
+<span data-i18n="brand-name" class="">মাত্রা কীবোর্ড</span>
+</span>
+<span class="text-[11px] text-zinc-400 font-medium" data-i18n="app-subtitle">সর্বাধুনিক বাংলা টাইপিং পরিবেশ</span>
+</div>
+</div>
+<!-- Right: View Switcher, Dual Language & Quick Controls -->
+<div class="flex items-center gap-3">
+<!-- View Toggle Buttons -->
+<div class="flex p-1 rounded-xl bg-black/40 border border-white/10 text-xs font-medium">
+<button class="px-3 py-1.5 rounded-lg transition-all shadow-md flex items-center gap-1.5 font-bengali bg-brand-500 text-white" id="btn-view-app" onclick="switchView('app')" style="background-color: rgb(217, 119, 6);">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="nav-app-window" class="">কিবোর্ড ইন্টারফেস</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg transition-all hover:text-zinc-200 flex items-center gap-1.5 font-bengali text-zinc-400" id="btn-view-tray" onclick="switchView('tray')">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="nav-tray-menu" class="">ট্রে মেনু</span>
+</button>
+</div>
+<!-- Language Switcher -->
+<button class="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold tracking-wide text-zinc-200 flex items-center gap-1.5 transition-colors" id="lang-switch-btn" onclick="toggleLanguage()">
+<svg class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: rgb(217, 119, 6);"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span id="lang-indicator" class="">English</span>
+</button>
+<!-- Accent Color Cycle Button -->
+<button class="w-9 h-9 flex items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-brand-400 transition-colors" onclick="cycleAccentColor()" title="Cycle Accent Color">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4 4 4 0 014-4 4 4 0 014-4 4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainContentContainer -->
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center items-center relative">
+<!-- ============================================== -->
+<!-- VIEW 1: MAIN APPLICATION WINDOW (Default)      -->
+<!-- ============================================== -->
+<div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden transition-all duration-300" id="view-app">
+<div class="grid grid-cols-12 min-h-[640px]">
+<!-- Sidebar Navigation -->
+<aside class="col-span-12 md:col-span-4 lg:col-span-3 border-r border-white/10 p-4 flex flex-col justify-between bg-black/20">
+<div class="space-y-6">
+<!-- Sidebar Brand Header -->
+<div class="px-3 pt-2">
+<div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="sidebar-menu-title">নেভিগেশন প্যানেল</div>
+</div>
+<!-- Navigation Items -->
+<nav class="space-y-1">
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors bg-brand-500/15 text-brand-400 border border-brand-500/30" id="tab-btn-typing" onclick="setTab('typing')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="menu-typeface" class="">টাইপফেস ও লেআউট</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-zinc-200 hover:bg-white/5 text-zinc-400" id="tab-btn-font" onclick="setTab('font')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="menu-font" class="">ফন্ট সিলেকশন</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-zinc-200 hover:bg-white/5 text-zinc-400" id="tab-btn-dict" onclick="setTab('dict')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="menu-dictionary" class="">কাস্টম ডিকশনারি</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-zinc-200 hover:bg-white/5 text-zinc-400" id="tab-btn-converter" onclick="setTab('converter')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="menu-converter" class="">লিপি রূপান্তর</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-zinc-200 hover:bg-white/5 text-zinc-400" id="tab-btn-ai" onclick="setTab('ai')">
+<svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span data-i18n="menu-ai" class="">এআই ইন্টিগ্রেশন</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-zinc-200 hover:bg-white/5 text-zinc-400" id="tab-btn-settings" onclick="setTab('settings')" style="color: rgb(217, 119, 6);">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="menu-settings" class="">সেটিংস</span>
+</button>
+</nav>
+</div>
+<!-- Sidebar Status Card -->
+<div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+
+
+</div>
+</aside>
+<!-- Dynamic Tab Body Area -->
+<div class="col-span-12 md:col-span-8 lg:col-span-9 p-6 flex flex-col justify-between overflow-y-auto max-h-[750px]">
+<!-- TAB 1: TYPING STUDIO -->
+<div class="space-y-6" id="content-typing">
+<!-- Studio Header Controls -->
+<div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
+<div>
+<h2 class="text-xl font-bold text-white tracking-tight font-bengali" data-i18n="studio-heading">টাইপিং স্টুডিও ও ফনেটিক ড্রাফটার</h2>
+<p class="text-xs text-zinc-400 mt-0.5" data-i18n="studio-desc">ফনেটিক টাইপিং করুন এবং তাৎক্ষণিক প্রম্পট সাজেশন উপভোগ করুন</p>
+</div>
+<!-- Layout Switcher Select -->
+<div class="flex items-center gap-2">
+
+<select class="glass-input text-xs font-medium text-white px-3 py-1.5 rounded-xl border border-white/10 focus:ring-1 focus:ring-brand-500 outline-none">
+<option value="avro">Avro Phonetic (অভ্র ফোনেটিক)</option>
+<option value="bijoy">Bijoy Classic (বিজয় ক্লাসিক)</option>
+<option value="probhat">Probhat (প্রভাত)</option>
+<option value="munir">Munir Optima (মুনীর অপ্টিমা)</option>
+</select>
+</div>
+</div>
+<!-- Interactive Workspace & Live Suggestion Popover -->
+<div class="relative">
+<!-- Live Typing Preview Box -->
+<div class="glass-input rounded-2xl p-6 text-lg md:text-xl leading-relaxed text-zinc-100 min-h-[170px] border border-white/10 relative focus-within:ring-2 focus-within:ring-brand-500/50 transition-all font-bengali">
+<span class="">আমি বাংলায় গান গাই, আমি বাংলার গান গাই; আমি আমার </span>
+<span class="text-brand-400 font-mono font-semibold bg-brand-500/10 px-1 py-0.5 rounded" style="color: rgb(217, 119, 6);">bhalobashi</span><span class="inline-block w-0.5 h-6 bg-brand-500 caret-pulse align-middle ml-0.5" style="background-color: rgb(217, 119, 6);"></span>
+</div>
+<!-- 5-Row Suggestion Popover -->
+<div class="absolute left-6 top-[138px] z-30 w-72 glass-popover rounded-2xl overflow-hidden shadow-2xl transition-all animate-in fade-in zoom-in-95 duration-200">
+<!-- Popover Header -->
+<div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 text-xs font-semibold text-zinc-300">
+<span class="flex items-center gap-1.5" data-i18n="popover-title">সাজেশন তালিকা</span>
+<button class="text-zinc-500 hover:text-white transition-colors">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- 5 Candidate Rows -->
+<div class="p-1.5 space-y-0.5 text-xs">
+<!-- Row 1: Active primary item -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-brand-500 text-white font-medium shadow-sm cursor-pointer" style="background-color: rgb(217, 119, 6);">
+<div class="flex items-center gap-2 font-bengali text-sm">
+<span class="">ভালোবাসি</span>
+</div>
+<span class="text-[10px] font-mono bg-white/20 px-1.5 py-0.5 rounded tracking-wide">Space / 1</span>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-300 hover:bg-white/10 cursor-pointer transition-colors">
+<div class="flex items-center gap-2 font-bengali text-sm">
+<span class="">ভালোবাসী</span>
+</div>
+<span class="text-[10px] font-mono text-zinc-400">2</span>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-300 hover:bg-white/10 cursor-pointer transition-colors">
+<div class="flex items-center gap-2 font-bengali text-sm">
+<span class="">ভালবাসি</span>
+</div>
+<span class="text-[10px] font-mono text-zinc-400">3</span>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-300 hover:bg-white/10 cursor-pointer transition-colors">
+<div class="flex items-center gap-2 font-bengali text-sm">
+<span class="">ভালবাসা</span>
+</div>
+<span class="text-[10px] font-mono text-zinc-400">4</span>
+</div>
+<!-- Row 5 -->
+<div class="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-300 hover:bg-white/10 cursor-pointer transition-colors">
+<div class="flex items-center gap-2 font-bengali text-sm">
+<span class="">ভালো বাসি</span>
+</div>
+<span class="text-[10px] font-mono text-zinc-400">5</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Candidate Quick Bar -->
+<div class="pt-2">
+<div class="text-[11px] text-zinc-400 mb-2 font-medium" data-i18n="candidate-bar-title">হটকি বার (দ্রুত ইনপুট)</div>
+<div class="grid grid-cols-5 gap-2">
+<div class="glass-pill p-2.5 rounded-xl text-center cursor-pointer border-brand-500/40 bg-brand-500/10">
+<span class="block text-sm font-semibold text-white font-bengali">ভালোবাসি</span>
+<span class="text-[10px] text-brand-400 font-mono" style="color: rgb(217, 119, 6);">[1]</span>
+</div>
+<div class="glass-pill p-2.5 rounded-xl text-center cursor-pointer">
+<span class="block text-sm font-medium text-zinc-300 font-bengali">ভালোবাসী</span>
+<span class="text-[10px] text-zinc-500 font-mono">[2]</span>
+</div>
+<div class="glass-pill p-2.5 rounded-xl text-center cursor-pointer">
+<span class="block text-sm font-medium text-zinc-300 font-bengali">ভালবাসি</span>
+<span class="text-[10px] text-zinc-500 font-mono">[3]</span>
+</div>
+<div class="glass-pill p-2.5 rounded-xl text-center cursor-pointer">
+<span class="block text-sm font-medium text-zinc-300 font-bengali">ভালবাসা</span>
+<span class="text-[10px] text-zinc-500 font-mono">[4]</span>
+</div>
+<div class="glass-pill p-2.5 rounded-xl text-center cursor-pointer">
+<span class="block text-sm font-medium text-zinc-300 font-bengali">ভালো বাসি</span>
+<span class="text-[10px] text-zinc-500 font-mono">[5]</span>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2: SETTINGS (Refined with 5 Top Docks & Themes) -->
+<div class="space-y-8 hidden" id="content-settings">
+<!-- Settings Header -->
+<div class="pb-3 border-b border-white/10">
+<h2 class="text-xl font-bold text-white tracking-tight" data-i18n="settings-title">কিবোর্ড সেটিংস ও পারসোনালাইজেশন</h2>
+<p class="text-xs text-zinc-400 mt-0.5" data-i18n="settings-subtitle">আপনার টাইপিং ও ভিজ্যুয়াল অভিজ্ঞতা কাস্টমাইজ করুন</p>
+</div>
+<!-- Section 1: App Icon Selector (3 User Images) -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-xs font-semibold text-zinc-300 tracking-wider uppercase" data-i18n="icon-select-title">অ্যাপ্লিকেশন আইকন নির্বাচন</label>
+
+</div>
+<div class="grid grid-cols-3 gap-4">
+<!-- Icon 1: Primary Orange -->
+<div class="p-3 rounded-2xl border-2 border-brand-500 bg-brand-500/10 cursor-pointer flex items-center gap-3 transition-all hover:scale-[1.02]" id="icon-tile-orange" onclick="setAppIcon('orange', 'https://lh3.googleusercontent.com/aida-public/AB6AXuALpHA3-4k0XOLrh6ImLzAc_fyImsH1KelskcvKoZ6430cinzks1Nrkf0TODvrffkGh2yYa15Enuz_YxWURugXg7YKMSCSPgRhozGcpf5gnigPCxs6czB2V5kj5NPTNsBqqhvA7PTigyun9LlYqJrGr5EkA55biS6ZYzpsoWcWjl3Bimnzzjbv00cpimK7zMzvA17glK5PcefIt7BEs1nthyKAXowNpgtgxTTQKslQkfg6Zhg1ZM1mo')">
+<img alt="Primary Orange Icon" class="w-12 h-12 rounded-xl object-cover shadow ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDituuaqMKlykSyaIp78PjAMzTQ81Xgy6XLHsQst-cEPZMY_XwZJ9RgbVPPIy23swqsdFMQBLCWA705aN_XmVyLFjH4o4Pstz5Hk2NLFU12eAqfz8dmxiLCj6HtwdMzxrzwwZdo28RvpX9dXV29IZJbrRdhpxVtkEWoSMUneATGxPfrf2S6l__W6ybwpmDi1Cit_XyxiwnDwFjGooAyUw5Q7_wjQpN4c322Zodp6snC2sb5-EIyu7u">
+<div>
+<div class="text-xs font-bold text-white" data-i18n="icon-orange-label">সিগনেচার অরেঞ্জ</div>
+<div class="text-[10px] text-zinc-400 font-mono" data-i18n="icon-orange-sub">ডিফল্ট ক্লাসিক</div>
+</div>
+</div>
+<!-- Icon 2: Dark / OLED -->
+<div class="p-3 rounded-2xl border border-white/10 bg-white/5 cursor-pointer flex items-center gap-3 transition-all hover:scale-[1.02]" id="icon-tile-dark" onclick="setAppIcon('dark', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnp8S9WsnxsuW3lBRSx1oXqjR2w_CEcbL4CmSmxf4zo4P-vc7sYwUQ4Mr8RBQ4Qd1I1hJJ7S7l2OslFLDI_46Pq4Ff-TrW4-dqArAeqTaE5kVrczTC1olZt7-zR7yFueyHMVb-zJxsksWaIIPXwHLBe57CGdL8oxcRRLfaLd4RZsKa3ZPzEEKghJhmutfZ98O5i_RPgcpJenhJoXiM0pBZqs_Vm3J5NytHA_8ehrSl-WnB-u9_rWWQ')">
+<img alt="OLED Dark Icon" class="w-12 h-12 rounded-xl object-cover shadow ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeKcmOdzgwO2yAJT9WAnvqZqbUh1rfMKgqT6cSovSJfkEQig8gebGdjB08154p4dLzQJfMNll5X9f-NLFbDPta8rWSU9FXH6Os0vNX0n-aUvvxyCjl1wC2R-a3csKkWWfvHZNGS-vk3a75CAYIGR-1e5vhvS_RpLuLtNsGthBjfhf6hx-eEY_r-qLNEEjWmAcyw-5wyj0MoneE-pIn-dvaPQYd1uSYX7pbkZrnXOnSR7PMyvR8vcV3">
+<div>
+<div class="text-xs font-bold text-white" data-i18n="icon-dark-label">অবসিডিয়ান ডার্ক</div>
+<div class="text-[10px] text-zinc-400 font-mono" data-i18n="icon-dark-sub">স্টিলথ ব্ল্যাক</div>
+</div>
+</div>
+<!-- Icon 3: Minimal White -->
+<div class="p-3 rounded-2xl border border-white/10 bg-white/5 cursor-pointer flex items-center gap-3 transition-all hover:scale-[1.02]" id="icon-tile-light" onclick="setAppIcon('light', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCF7l6wQ5b5Cd8UjWrxJKFPRnJY6lyRh0d8NZEV3sDlKWnlySdkAX5BGf8wgTX9rYTx9qecTF8fR0dwL3p8yTUfQI_tVpDGFQ0bOm-erZauVDsXC0FyWT9_XWSSdpjlsZiP-nf5GlJCRPpYo0IIVRaSqFnZ14_UOxOSxbBsmDi4O-_-W0xmoxoFJ-rb0fw40YIMUHUDlOg5aunZRkO5zjINUSFMoDguHp-SKXQ115xy6OnWpDi5yLy9')">
+<img alt="Minimal White Icon" class="w-12 h-12 rounded-xl object-cover shadow ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsPiflrssboz9nPm_v2kMioDK6gaYdGnWKPS8ubqGpxTMzHw5v5b2tyiOdwG3DeA8qwa1ircaulY6DM7m4W8ALTjAN-R2oiLC9FAjAHtZcBdA213r5nOfVahBfPID87EpdbSGH6v37hNznNwttudNk5kRtNJwMGSu3A-szts_BbbEe5mN-Ycxy7NPT3qaokyU6GMP2HPCYlDf1XVhGwC5uuYqaT1hHwiFnZYiG9FmBKK8SVJRd8DL1">
+<div>
+<div class="text-xs font-bold text-white" data-i18n="icon-light-label">পিউর আইভরি</div>
+<div class="text-[10px] text-zinc-400 font-mono" data-i18n="icon-light-sub">মডার্ন ক্লিন</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 2: Top Dock / Bar Proper Overview Variants (5 Full Variants) -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-xs font-semibold text-zinc-300 tracking-wider uppercase" data-i18n="dock-variants-title">টপ ডক ও বার ভ্যারিয়েন্ট ওভারভিউ (৫টি পূর্ণাঙ্গ স্টাইল)</label>
+
+</div>
+<!-- Interactive Dock Preview Canvas -->
+<div class="p-5 rounded-2xl glass-input border border-white/10 flex flex-col items-center justify-center min-h-[95px] relative overflow-hidden" id="dock-preview-container">
+<!-- Variant 1: Slim Searchbar Dock -->
+<div class="items-center gap-3 px-4 py-2 rounded-full glass-panel border border-white/20 shadow-xl transition-all duration-300 flex" id="dock-preview-v1">
+<div class="flex items-center gap-2 border-r border-white/10 pr-3">
+<span class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-ping" style="background-color: rgb(217, 119, 6);"></span>
+<span class="text-xs font-bold text-white font-bengali">বাংলা</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+<span class="">Avro Phonetic</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">Space</span>
+</div>
+<div class="flex items-center gap-1.5 pl-2 border-l border-white/10 text-zinc-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span class="text-[10px]">Active</span>
+</div>
+</div>
+<!-- Variant 2: OLED Nano Capsule -->
+<div class="items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/95 border border-zinc-700 shadow-2xl transition-all duration-300 hidden" id="dock-preview-v2">
+<span class="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-bold text-brand-400 font-mono" style="color: rgb(217, 119, 6);">বাং</span>
+<span class="text-xs text-zinc-200 font-mono">OLED Nano</span>
+<span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+</div>
+<!-- Variant 3: macOS Frosted Dynamic Island -->
+<div class="items-center justify-between gap-6 px-5 py-2.5 rounded-2xl bg-zinc-900/80 backdrop-blur-2xl border border-white/25 shadow-2xl transition-all duration-300 min-w-[280px] hidden" id="dock-preview-v3">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-red-400/80"></span>
+<span class="w-3 h-3 rounded-full bg-yellow-400/80"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-400/80"></span>
+</div>
+<span class="text-xs font-semibold text-white tracking-wide">ম্যাক ওএস আইল্যান্ড</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 font-mono" style="color: rgb(217, 119, 6);">5.6.2</span>
+</div>
+<!-- Variant 4: Tactile Mechanical Dock -->
+<div class="items-center gap-2 p-1.5 rounded-xl bg-gradient-to-b from-zinc-800 to-zinc-950 border border-zinc-600 shadow-[0_4px_12px_rgba(0,0,0,0.8)] transition-all duration-300 hidden" id="dock-preview-v4">
+<div class="px-3 py-1 rounded bg-zinc-700 text-xs font-bold text-white border-b-2 border-zinc-900 shadow-inner">অভ্র</div>
+<div class="px-3 py-1 rounded bg-zinc-800 text-xs text-zinc-400 border-b-2 border-zinc-950">বিজয়</div>
+<div class="px-3 py-1 rounded bg-brand-500 text-xs font-bold text-white border-b-2 border-brand-700" style="background-color: rgb(217, 119, 6);">F12</div>
+</div>
+<!-- Variant 5: Floating Micro Minimal Badge -->
+<div class="items-center gap-2 px-3 py-1 rounded-lg bg-zinc-900/90 border border-white/10 shadow-lg transition-all duration-300 hidden" id="dock-preview-v5">
+<div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+<span class="text-[11px] font-mono text-zinc-300 font-semibold">BN / AVRO</span>
+</div>
+</div>
+<!-- 5 Selectable Variant Cards -->
+<div class="grid grid-cols-5 gap-2 text-center">
+<div class="glass-pill p-2.5 rounded-xl cursor-pointer border-brand-500 bg-brand-500/15" id="dock-card-1" onclick="setDockVariant(1)">
+<div class="text-xs font-bold text-white" data-i18n="dock-v1-label">স্লিম সার্চবার</div>
+<div class="text-[9px] text-zinc-400 mt-0.5 font-mono">Slim Bar</div>
+</div>
+<div class="glass-pill p-2.5 rounded-xl cursor-pointer" id="dock-card-2" onclick="setDockVariant(2)">
+<div class="text-xs font-medium text-zinc-300" data-i18n="dock-v2-label">ন্যানো ক্যাপসুল</div>
+<div class="text-[9px] text-zinc-500 mt-0.5 font-mono">OLED Nano</div>
+</div>
+<div class="glass-pill p-2.5 rounded-xl cursor-pointer" id="dock-card-3" onclick="setDockVariant(3)">
+<div class="text-xs font-medium text-zinc-300" data-i18n="dock-v3-label">ম্যাক ওএস ডক</div>
+<div class="text-[9px] text-zinc-500 mt-0.5 font-mono">macOS Frosted</div>
+</div>
+<div class="glass-pill p-2.5 rounded-xl cursor-pointer" id="dock-card-4" onclick="setDockVariant(4)">
+<div class="text-xs font-medium text-zinc-300" data-i18n="dock-v4-label">মেকানিক্যাল</div>
+<div class="text-[9px] text-zinc-500 mt-0.5 font-mono">Tactile Keypad</div>
+</div>
+<div class="glass-pill p-2.5 rounded-xl cursor-pointer" id="dock-card-5" onclick="setDockVariant(5)">
+<div class="text-xs font-medium text-zinc-300" data-i18n="dock-v5-label">মাইক্রো ব্যাজ</div>
+<div class="text-[9px] text-zinc-500 mt-0.5 font-mono">Floating Micro</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Theme Choices & Theme Customizer (6 Complete Themes) -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<label class="text-xs font-semibold text-zinc-300 tracking-wider uppercase" data-i18n="theme-select-title">থিম নির্বাচন ও কাস্টমাইজেশন</label>
+<span class="text-[10px] text-zinc-400" data-i18n="theme-subtitle">৬টি প্রিমিয়াম থিম প্যালেট</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-2.5">
+<!-- Theme 1: Default Orange -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between" id="theme-tile-default" onclick="selectThemePreset('#f97316', 50, 24, 'theme-tile-default')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#f97316] ring-2 ring-white/20"></span>
+<div>
+<div class="text-xs font-bold text-white" data-i18n="theme-default">ডিফল্ট অরেঞ্জ</div>
+<div class="text-[10px] text-zinc-400 font-mono">Tactile Orange</div>
+</div>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-brand-500" style="background-color: rgb(217, 119, 6);"></span>
+</div>
+<!-- Theme 2: Pure OLED Dark -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between" id="theme-tile-oled" onclick="selectThemePreset('#ffffff', 90, 10, 'theme-tile-oled')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-zinc-950 ring-2 ring-zinc-700"></span>
+<div>
+<div class="text-xs font-medium text-zinc-200" data-i18n="theme-oled">পিওর ওএলইডি ডার্ক</div>
+<div class="text-[10px] text-zinc-500 font-mono">Deep Black</div>
+</div>
+</div>
+</div>
+<!-- Theme 3: Nordic Light Blue -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between" id="theme-tile-nordic" onclick="selectThemePreset('#38bdf8', 40, 30, 'theme-tile-nordic')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#38bdf8] ring-2 ring-white/20"></span>
+<div>
+<div class="text-xs font-medium text-zinc-200" data-i18n="theme-nordic">নর্ডিক লাইট ব্লু</div>
+<div class="text-[10px] text-zinc-500 font-mono">Nordic Frosted</div>
+</div>
+</div>
+</div>
+<!-- Theme 4: Warm Ivory -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between border-brand-500 bg-brand-500/10" id="theme-tile-ivory" onclick="selectThemePreset('#d97706', 45, 20, 'theme-tile-ivory')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#fef3c7] ring-2 ring-amber-300"></span>
+<div>
+<div class="text-xs font-medium text-zinc-200" data-i18n="theme-ivory">ওয়ার্ম আইভরি</div>
+<div class="text-[10px] text-zinc-500 font-mono">Paper Warmth</div>
+</div>
+</div>
+</div>
+<!-- Theme 5: Sunset Amber -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between" id="theme-tile-sunset" onclick="selectThemePreset('#ea580c', 60, 26, 'theme-tile-sunset')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#ea580c] ring-2 ring-white/20"></span>
+<div>
+<div class="text-xs font-medium text-zinc-200" data-i18n="theme-sunset">সানসেট অ্যাম্বার</div>
+<div class="text-[10px] text-zinc-500 font-mono">Sunset Amber</div>
+</div>
+</div>
+</div>
+<!-- Theme 6: Emerald Neon -->
+<div class="glass-pill p-3 rounded-xl cursor-pointer flex items-center justify-between" id="theme-tile-emerald" onclick="selectThemePreset('#10b981', 50, 24, 'theme-tile-emerald')">
+<div class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#10b981] ring-2 ring-white/20"></span>
+<div>
+<div class="text-xs font-medium text-zinc-200" data-i18n="theme-emerald">এমারেল্ড নিয়ন</div>
+<div class="text-[10px] text-zinc-500 font-mono">Cyber Slate</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sub-panel: Theme Customizer -->
+<div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-white uppercase tracking-wider" data-i18n="customize-theme-title">থিম কাস্টমাইজ করুন</span>
+<div class="flex items-center gap-2">
+<label class="text-[11px] text-zinc-400" data-i18n="accent-picker-label">অ্যাকসেন্ট কালার:</label>
+<input class="w-6 h-6 rounded-lg cursor-pointer bg-transparent border-none" id="accent-color-picker" oninput="setCustomAccent(this.value)" type="color" value="#f97316">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Glass Opacity Slider -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-zinc-300 font-bengali" data-i18n="slider-opacity">গ্লাস অস্বচ্ছতা (Opacity)</span>
+<span class="text-brand-400 font-mono" id="opacity-val-label" style="color: rgb(217, 119, 6);">41%</span>
+</div>
+<input class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer" id="slider-opacity" max="100" min="20" oninput="updateOpacity(this.value)" type="range" value="50">
+</div>
+<!-- Blur Intensity Slider -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-zinc-300 font-bengali" data-i18n="slider-blur">ব্লার গভীরতা (Blur Intensity)</span>
+<span class="text-brand-400 font-mono" id="blur-val-label" style="color: rgb(217, 119, 6);">20px</span>
+</div>
+<input class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer" id="slider-blur" max="40" min="0" oninput="updateBlur(this.value)" type="range" value="24">
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Shortcuts -->
+<div class="space-y-3">
+<label class="text-xs font-semibold text-zinc-300 tracking-wider uppercase" data-i18n="shortcuts-title">ভাষা পরিবর্তনের শর্টকাট</label>
+<div class="grid grid-cols-3 gap-3">
+<div class="glass-pill p-3 rounded-xl flex items-center justify-between cursor-pointer border-brand-500/40 bg-brand-500/10">
+<span class="text-xs font-medium text-white font-mono">Ctrl + Space</span>
+<span class="w-2 h-2 rounded-full bg-brand-500" style="background-color: rgb(217, 119, 6);"></span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex items-center justify-between cursor-pointer">
+<span class="text-xs font-medium text-zinc-300 font-mono">F12 Key</span>
+<span class="w-2 h-2 rounded-full bg-zinc-600"></span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex items-center justify-between cursor-pointer">
+<span class="text-xs font-medium text-zinc-300 font-mono">Shift + Space</span>
+<span class="w-2 h-2 rounded-full bg-zinc-600"></span>
+</div>
+</div>
+</div>
+<!-- Section 5: Startup toggle -->
+<div class="pt-4 border-t border-white/10 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white font-bengali" data-i18n="startup-title">স্বয়ংক্রিয় স্টার্টআপ</span>
+<span class="text-xs text-zinc-400 font-bengali" data-i18n="startup-desc">কম্পিউটার চালু হওয়ার সাথে সাথে ব্যাকগ্রাউন্ডে চালু হবে</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+</label>
+</div>
+</div>
+<!-- TAB 3: FONT SELECTION SECTION (Expanded with Custom Font Upload) -->
+<div class="space-y-6 hidden" id="content-font">
+<div class="pb-3 border-b border-white/10 flex items-center justify-between">
+<div>
+<h2 class="text-xl font-bold text-white" data-i18n="font-title">ফন্ট সিলেকশন ও রেন্ডারিং</h2>
+<p class="text-xs text-zinc-400" data-i18n="font-desc">সিস্টেম ও ওয়েব টাইপোগ্রাফি প্রিভিউ এবং কাস্টম ফন্ট পরিচালনা</p>
+</div>
+
+</div>
+<!-- Standard Fonts Grid -->
+<div class="space-y-2">
+<div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="standard-fonts-title">স্ট্যান্ডার্ড বাংলা ফন্ট তালিকা</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="fonts-container">
+<!-- Font 1 -->
+<div class="glass-pill p-3.5 rounded-2xl border-brand-500 bg-brand-500/10 cursor-pointer">
+<div class="flex justify-between items-center">
+<div class="text-sm font-bold text-white font-bengali">হিন্দ শিলিগুড়ি (Hind Siliguri)</div>
+<span class="text-[10px] text-brand-400 font-mono uppercase bg-brand-500/20 px-2 py-0.5 rounded" style="color: rgb(217, 119, 6);">Active</span>
+</div>
+<div class="text-xs text-zinc-300 mt-2 font-bengali leading-relaxed">আমাদের মনের কথা বাংলায় প্রকাশ পাক নির্দ্বিধায়।</div>
+</div>
+<!-- Font 2 -->
+<div class="glass-pill p-3.5 rounded-2xl cursor-pointer hover:border-white/20">
+<div class="flex justify-between items-center">
+<div class="text-sm font-bold text-white font-bengali">কালপুরুষ (Kalpurush)</div>
+<span class="text-[10px] text-zinc-500 font-mono uppercase">System</span>
+</div>
+<div class="text-xs text-zinc-300 mt-2 font-bengali leading-relaxed">আমার ভাইয়ের রক্তে রাঙানো একুশে ফেব্রুয়ারি।</div>
+</div>
+<!-- Font 3 -->
+<div class="glass-pill p-3.5 rounded-2xl cursor-pointer hover:border-white/20">
+<div class="flex justify-between items-center">
+<div class="text-sm font-bold text-white font-bengali">সোলায়মানলিপি (SolaimanLipi)</div>
+<span class="text-[10px] text-zinc-500 font-mono uppercase">Classic</span>
+</div>
+<div class="text-xs text-zinc-300 mt-2 font-bengali leading-relaxed">বাংলা বর্ণমালার ঐতিহ্য ও আধুনিক প্রযুক্তির মেলবন্ধন।</div>
+</div>
+<!-- Font 4 -->
+<div class="glass-pill p-3.5 rounded-2xl cursor-pointer hover:border-white/20">
+<div class="flex justify-between items-center">
+<div class="text-sm font-bold text-white font-bengali">সিয়াম রূপালী (Siyam Rupali)</div>
+<span class="text-[10px] text-zinc-500 font-mono uppercase">Web Safe</span>
+</div>
+<div class="text-xs text-zinc-300 mt-2 font-bengali leading-relaxed">মুক্ত ও স্বাধীন চিন্তার প্রকাশ হোক মাতৃভাষায়।</div>
+</div>
+<!-- Font 5 -->
+<div class="glass-pill p-3.5 rounded-2xl cursor-pointer hover:border-white/20 md:col-span-2">
+<div class="flex justify-between items-center">
+<div class="text-sm font-bold text-white font-bengali">নোটো সান্স বাংলা (Noto Sans Bengali)</div>
+<span class="text-[10px] text-zinc-500 font-mono uppercase">Google Fonts</span>
+</div>
+<div class="text-xs text-zinc-300 mt-2 font-bengali leading-relaxed">সর্বজনীন ও আন্তর্জাতিক মানের বাংলা টাইপোগ্রাফি রেন্ডারিং।</div>
+</div>
+</div>
+</div>
+<!-- Custom Font Upload Sub-section -->
+<div class="p-4 rounded-2xl glass-input border border-white/10 space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold text-white font-bengali" data-i18n="custom-font-heading">কাস্টম ফন্ট আপলোড ও যোগ করুন</h3>
+<p class="text-[11px] text-zinc-400 font-bengali" data-i18n="custom-font-desc">আপনার নিজস্ব TTF, OTF অথবা WOFF ফন্ট ফাইল ড্র্যাগ করে ইনস্টল করুন</p>
+</div>
+<button class="px-3 py-1.5 rounded-xl bg-brand-500 text-white text-xs font-semibold font-bengali shadow-md" data-i18n="btn-install-font" style="background-color: rgb(217, 119, 6);">ফন্ট ইনস্টল করুন</button>
+</div>
+<!-- Dropzone Area -->
+<div class="border-2 border-dashed border-white/15 hover:border-brand-500/50 rounded-xl p-5 text-center flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-white/[0.01]">
+<svg class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+<div class="text-xs text-zinc-300 font-bengali" data-i18n="font-drop-prompt">ফন্ট ফাইল এখানে ছেড়ে দিন অথবা ব্রাউজ করুন</div>
+<div class="text-[10px] text-zinc-500 font-mono">Supports TTF, OTF, WOFF2 up to 25MB</div>
+</div>
+</div>
+</div>
+<!-- TAB 4: Custom Dictionary -->
+<div class="space-y-6 hidden" id="content-dict">
+<div class="pb-3 border-b border-white/10">
+<h2 class="text-xl font-bold text-white" data-i18n="dict-title">কাস্টম ডিকশনারি ও অটো-কারেক্ট</h2>
+<p class="text-xs text-zinc-400" data-i18n="dict-desc">নতুন শব্দ এবং অটো-টেক্সট ম্যাক্রো ম্যানেজ করুন</p>
+</div>
+<div class="flex gap-2">
+<input class="glass-input flex-1 px-4 py-2 rounded-xl text-sm text-white" placeholder="নূতন শব্দ লিখুন..." type="text">
+<button class="px-5 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold font-bengali" data-i18n="dict-add-btn" style="background-color: rgb(217, 119, 6);">শব্দ যোগ করুন</button>
+</div>
+</div>
+<!-- TAB 5: Script Converter -->
+<div class="space-y-6 hidden" id="content-converter">
+<div class="pb-3 border-b border-white/10">
+<h2 class="text-xl font-bold text-white" data-i18n="converter-title">লিপি রূপান্তরকারী (ANSI থেকে Unicode)</h2>
+<p class="text-xs text-zinc-400" data-i18n="converter-desc">বিজয় ও ইউনিকোড উভয় ফরম্যাটে তাৎক্ষণিক কনভার্ট করুন</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<textarea class="glass-input h-40 p-4 rounded-xl text-xs text-white resize-none" placeholder="এখানে বিজয় বা অ্যানসি টেক্সট পেস্ট করুন..."></textarea>
+<textarea class="glass-input h-40 p-4 rounded-xl text-xs text-zinc-300 resize-none bg-black/40" placeholder="ইউনিকোড ফলাফল এখানে আসবে..." readonly=""></textarea>
+</div>
+</div>
+<!-- TAB 6: AI INTEGRATION SECTION (Full Restoration with API Key & Assistant Settings) -->
+<div class="space-y-6 hidden" id="content-ai">
+<div class="pb-3 border-b border-white/10 flex items-center justify-between">
+<div>
+<h2 class="text-xl font-bold text-white flex items-center gap-2" data-i18n="ai-title">এআই বাংলা রাইটিং সহকারী</h2>
+<p class="text-xs text-zinc-400" data-i18n="ai-desc">স্মার্ট প্রম্পটিং এবং ব্যাকরণ বিশ্লেষণ ইঞ্জিন</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span data-i18n="ai-status-active" class="">API কি সক্রিয়</span>
+</div>
+</div>
+<!-- AI Config Card: API Key & Model -->
+<div class="p-5 rounded-2xl glass-input border border-white/10 space-y-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Custom API Key Input -->
+<div class="space-y-2">
+<label class="text-xs font-semibold text-zinc-300 font-bengali" data-i18n="ai-api-key-label">কাস্টম এআই এপিআই কি (Custom API Key)</label>
+<div class="relative">
+<input class="glass-input w-full px-3.5 py-2 pr-10 rounded-xl text-xs font-mono text-zinc-200 focus:ring-1 focus:ring-purple-500 outline-none" id="ai-api-key-field" type="password" value="sk-matra-7829-bn-ultra-secured-key">
+<button class="absolute right-3 top-2.5 text-zinc-400 hover:text-white transition-colors" onclick="toggleApiKeyVisibility()" type="button">
+<svg class="w-4 h-4" fill="none" id="eye-icon" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="text-[10px] text-zinc-500 font-mono">OpenAI / Claude / Gemini API Keys supported</div>
+</div>
+<!-- Model Selection -->
+<div class="space-y-2">
+<label class="text-xs font-semibold text-zinc-300 font-bengali" data-i18n="ai-model-label">মডেল নির্বাচন (AI Engine Model)</label>
+<select class="glass-input w-full px-3.5 py-2 rounded-xl text-xs text-white focus:ring-1 focus:ring-purple-500 outline-none">
+<option value="gpt4o">GPT-4o (OpenAI - দ্রুত ও সূক্ষ্ম ব্যাকরণ)</option>
+<option value="claude35">Claude 3.5 Sonnet (Anthropic - কাব্যিক ও সাবলীল বাংলা)</option>
+<option value="gemini15">Gemini 1.5 Pro (Google - বৃহৎ কনটেক্সট)</option>
+</select>
+<div class="text-[10px] text-zinc-500 font-mono">Zero-shot Bengali context fine-tuned</div>
+</div>
+</div>
+</div>
+<!-- AI Prompting Shortcuts / Quick Tools -->
+<div class="p-5 rounded-2xl glass-input space-y-3">
+<div class="text-xs font-semibold text-zinc-300 font-bengali" data-i18n="ai-quick-tools-title">দ্রুত এআই কমান্ড ও বিশ্লেষণ টুলস:</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-zinc-200 cursor-pointer hover:border-purple-500 hover:bg-purple-500/10 font-bengali transition-colors" data-i18n="ai-cmd-grammar">বানান ও ব্যাকরণ ঠিক করুন</span>
+<span class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-zinc-200 cursor-pointer hover:border-purple-500 hover:bg-purple-500/10 font-bengali transition-colors" data-i18n="ai-cmd-formal">দাপ্তরিক ভাষায় রূপান্তর</span>
+<span class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-zinc-200 cursor-pointer hover:border-purple-500 hover:bg-purple-500/10 font-bengali transition-colors" data-i18n="ai-cmd-summarize">সংক্ষেপ করুন</span>
+<span class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-zinc-200 cursor-pointer hover:border-purple-500 hover:bg-purple-500/10 font-bengali transition-colors" data-i18n="ai-cmd-poetic">কাব্যিক রূপান্তর</span>
+</div>
+</div>
+</div>
+<!-- Footer Metadata -->
+<div class="pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+
+
+</div>
+</div>
+</div>
+</div>
+<!-- END: View 1 -->
+<!-- ============================================== -->
+<!-- VIEW 2: RESTORED & EXPANDED SYSTEM TRAY MENU   -->
+<!-- ============================================== -->
+<div class="w-full max-w-sm glass-popover rounded-3xl overflow-hidden shadow-2xl p-4 space-y-4 border border-white/15 animate-in fade-in zoom-in-95 duration-200 hidden" id="view-tray">
+<!-- Tray Header -->
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl overflow-hidden shadow ring-1 ring-white/20 flex-shrink-0">
+<img alt="Matra Tray Logo" class="w-full h-full object-cover" id="tray-app-logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0W6qL-xQgqTgknGvdvpj2ZrvCGBnPTrM2n3mpmh6klI5SuAI3CAkS7uyZteD3Ee6uyow_xLTcVHt38PH-Ukcaqs-zXuCbn_mPi4TMFtZVYSIXrxtClC28w5imp0khJ979TaAuNikeGWvzAYsqAsGAEG_pfqihuPuY5vu_w6b0H_HsbMn1-Gm46pxVnQiN6oKjzG3Y8vPMIG_-RJ305Ej2O3XYZn_bo4pYtuJDKe_n-r4BH9jjTAkK">
+</div>
+<div>
+<div class="font-bold text-sm text-white tracking-tight" data-i18n="brand-name">মাত্রা কীবোর্ড</div>
+
+</div>
+</div>
+<button class="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors" onclick="switchView('app')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Quick Language Mode Selector -->
+<div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-black/40 border border-white/5 text-xs font-semibold">
+<button class="py-2 rounded-lg bg-brand-500 text-white shadow-sm font-bengali" data-i18n="tray-lang-bn" style="background-color: rgb(217, 119, 6);">বাংলা</button>
+<button class="py-2 rounded-lg text-zinc-400 hover:text-zinc-200 transition-colors font-mono">English</button>
+</div>
+<!-- Quick Layout Selector -->
+<div class="space-y-1.5">
+<div class="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider px-1 font-bengali" data-i18n="tray-layout-title">সক্রিয় লেআউট নির্বাচন</div>
+<div class="grid grid-cols-3 gap-1.5 text-xs font-medium font-bengali">
+<button class="py-1.5 px-2 rounded-lg bg-white/10 text-brand-400 border border-brand-500/30 font-semibold" data-i18n="tray-layout-avro" style="color: rgb(217, 119, 6);">ফোনেটিক</button>
+<button class="py-1.5 px-2 rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10" data-i18n="tray-layout-bijoy">জাতীয় / বিজয়</button>
+<button class="py-1.5 px-2 rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10" data-i18n="tray-layout-probhat">প্রভাত</button>
+</div>
+</div>
+<!-- Tray Action Items List -->
+<div class="space-y-1 pt-2 border-t border-white/10 text-xs font-medium font-bengali">
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors" onclick="switchView('app'); setTab('typing')">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: rgb(217, 119, 6);"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-open-ui" class="">কিবোর্ড ইন্টারফেস খুলুন</span>
+</span>
+<span class="text-[10px] text-zinc-500 font-mono">⌘O</span>
+</button>
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-virtual-viewer" class="">ভার্চুয়াল লেআউট ভিউয়ার</span>
+</span>
+</button>
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors" onclick="switchView('app'); setTab('converter')">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-converter-tool" class="">লিপি রূপান্তরকারী</span>
+</span>
+</button>
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors" onclick="switchView('app'); setTab('dict')">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-dict-manager" class="">ডিকশনারি ম্যানেজার</span>
+</span>
+</button>
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors" onclick="switchView('app'); setTab('ai')">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span data-i18n="tray-ai-assistant" class="">এআই রাইটিং সহকারী</span>
+</span>
+<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">AI</span>
+</button>
+<div class="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-sound-toggle" class="">টাইপিং সাউন্ড ইফেক্ট</span>
+</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-500"></div>
+</label>
+</div>
+<button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 text-zinc-200 transition-colors" onclick="switchView('app'); setTab('settings')">
+<span class="flex items-center gap-2.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-settings" class="">সেটিংস</span>
+</span>
+</button>
+</div>
+<!-- Tray Bottom Actions -->
+<div class="pt-3 border-t border-white/10 grid grid-cols-2 gap-2 text-xs font-medium font-bengali">
+
+<button class="py-2 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center gap-1.5 transition-colors">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-i18n="tray-quit-app" class="">অ্যাপ বন্ধ করুন</span>
+</button>
+</div>
+</div>
+<!-- END: View 2 -->
+</main>
+<!-- END: MainContentContainer -->
+<!-- JavaScript: Dual Language Dictionary & Interactive State Handler -->
+<script data-purpose="app-logic">
+    // Current Active Language ('bn' or 'en')
+    let currentLang = 'bn';
+
+    // Pure localization dictionary without mixing brackets
+    const translations = {
+      bn: {
+        "brand-name": "মাত্রা কীবোর্ড",
+        "app-subtitle": "সর্বাধুনিক বাংলা টাইপিং পরিবেশ",
+        "nav-app-window": "কিবোর্ড ইন্টারফেস",
+        "nav-tray-menu": "ট্রে মেনু",
+        "sidebar-menu-title": "নেভিগেশন প্যানেল",
+        "menu-typeface": "টাইপফেস ও লেআউট",
+        "menu-font": "ফন্ট সিলেকশন",
+        "menu-dictionary": "কাস্টম ডিকশনারি",
+        "menu-converter": "লিপি রূপান্তর",
+        "menu-ai": "এআই ইন্টিগ্রেশন",
+        "menu-settings": "সেটিংস",
+        "engine-status": "ইঞ্জিন স্ট্যাটাস",
+        "studio-heading": "টাইপিং স্টুডিও ও ফনেটিক ড্রাফটার",
+        "studio-desc": "ফনেটিক টাইপিং করুন এবং তাৎক্ষণিক প্রম্পট সাজেশন উপভোগ করুন",
+        "layout-label": "লেআউট:",
+        "popover-title": "সাজেশন তালিকা",
+        "candidate-bar-title": "হটকি বার (দ্রুত ইনপুট)",
+        "settings-title": "কিবোর্ড সেটিংস ও পারসোনালাইজেশন",
+        "settings-subtitle": "আপনার টাইপিং ও ভিজ্যুয়াল অভিজ্ঞতা কাস্টমাইজ করুন",
+        "icon-select-title": "অ্যাপ্লিকেশন আইকন নির্বাচন",
+        "icon-desc": "লাইভ ব্র্যান্ড লোগো পরিবর্তন করুন",
+        "icon-orange-label": "সিগনেচার অরেঞ্জ",
+        "icon-orange-sub": "ডিফল্ট ক্লাসিক",
+        "icon-dark-label": "অবসিডিয়ান ডার্ক",
+        "icon-dark-sub": "স্টিলথ ব্ল্যাক",
+        "icon-light-label": "পিউর আইভরি",
+        "icon-light-sub": "মডার্ন ক্লিন",
+        "dock-variants-title": "টপ ডক ও বার ভ্যারিয়েন্ট ওভারভিউ (৫টি পূর্ণাঙ্গ স্টাইল)",
+        "dock-variant-1": "স্লিম সার্চবার ডক",
+        "dock-variant-2": "ওএলইডি ন্যানো ক্যাপসুল",
+        "dock-variant-3": "ম্যাক ওএস ক্রিস্টাল ডক",
+        "dock-variant-4": "ট্যাকটাইল মেকানিক্যাল কিপ্যাড",
+        "dock-variant-5": "ফ্লোটিং মাইক্রো ব্যাজ",
+        "dock-v1-label": "স্লিম সার্চবার",
+        "dock-v2-label": "ন্যানো ক্যাপসুল",
+        "dock-v3-label": "ম্যাক ওএস ডক",
+        "dock-v4-label": "মেকানিক্যাল",
+        "dock-v5-label": "মাইক্রো ব্যাজ",
+        "theme-select-title": "থিম নির্বাচন ও কাস্টমাইজেশন",
+        "theme-subtitle": "৬টি প্রিমিয়াম থিম প্যালেট",
+        "theme-default": "ডিফল্ট অরেঞ্জ",
+        "theme-oled": "পিওর ওএলইডি ডার্ক",
+        "theme-nordic": "নর্ডিক লাইট ব্লু",
+        "theme-ivory": "ওয়ার্ম আইভরি",
+        "theme-sunset": "সানসেট অ্যাম্বার",
+        "theme-emerald": "এমারেল্ড নিয়ন",
+        "customize-theme-title": "থিম কাস্টমাইজ করুন",
+        "accent-picker-label": "অ্যাকসেন্ট কালার:",
+        "slider-opacity": "গ্লাস অস্বচ্ছতা (Opacity)",
+        "slider-blur": "ব্লার গভীরতা (Blur Intensity)",
+        "shortcuts-title": "ভাষা পরিবর্তনের শর্টকাট",
+        "startup-title": "স্বয়ংক্রিয় স্টার্টআপ",
+        "startup-desc": "কম্পিউটার চালু হওয়ার সাথে সাথে ব্যাকগ্রাউন্ডে চালু হবে",
+        "font-title": "ফন্ট সিলেকশন ও রেন্ডারিং",
+        "font-desc": "সিস্টেম ও ওয়েব টাইপোগ্রাফি প্রিভিউ এবং কাস্টম ফন্ট পরিচালনা",
+        "standard-fonts-title": "স্ট্যান্ডার্ড বাংলা ফন্ট তালিকা",
+        "custom-font-heading": "কাস্টম ফন্ট আপলোড ও যোগ করুন",
+        "custom-font-desc": "আপনার নিজস্ব TTF, OTF অথবা WOFF ফন্ট ফাইল ড্র্যাগ করে ইনস্টল করুন",
+        "btn-install-font": "ফন্ট ইনস্টল করুন",
+        "font-drop-prompt": "ফন্ট ফাইল এখানে ছেড়ে দিন অথবা ব্রাউজ করুন",
+        "dict-title": "কাস্টম ডিকশনারি ও অটো-কারেক্ট",
+        "dict-desc": "নতুন শব্দ এবং অটো-টেক্সট ম্যাক্রো ম্যানেজ করুন",
+        "dict-add-btn": "শব্দ যোগ করুন",
+        "converter-title": "লিপি রূপান্তরকারী (ANSI থেকে Unicode)",
+        "converter-desc": "বিজয় ও ইউনিকোড উভয় ফরম্যাটে তাৎক্ষণিক কনভার্ট করুন",
+        "ai-title": "এআই বাংলা রাইটিং সহকারী",
+        "ai-desc": "স্মার্ট প্রম্পটিং এবং ব্যাকরণ বিশ্লেষণ ইঞ্জিন",
+        "ai-status-active": "API কি সক্রিয়",
+        "ai-api-key-label": "কাস্টম এআই এপিআই কি (Custom API Key)",
+        "ai-model-label": "মডেল নির্বাচন (AI Engine Model)",
+        "ai-quick-tools-title": "দ্রুত এআই কমান্ড ও বিশ্লেষণ টুলস:",
+        "ai-cmd-grammar": "বানান ও ব্যাকরণ ঠিক করুন",
+        "ai-cmd-formal": "দাপ্তরিক ভাষায় রূপান্তর",
+        "ai-cmd-summarize": "সংক্ষেপ করুন",
+        "ai-cmd-poetic": "কাব্যিক রূপান্তর",
+        "copyright-text": "সর্বস্বত্ব সংরক্ষিত © মাত্রা কীবোর্ড",
+        "tray-status": "অভ্র ফোনেটিক সক্রিয়",
+        "tray-lang-bn": "বাংলা",
+        "tray-layout-title": "সক্রিয় লেআউট নির্বাচন",
+        "tray-layout-avro": "ফোনেটিক",
+        "tray-layout-bijoy": "জাতীয় / বিজয়",
+        "tray-layout-probhat": "প্রভাত",
+        "tray-open-ui": "কিবোর্ড ইন্টারফেস খুলুন",
+        "tray-virtual-viewer": "ভার্চুয়াল লেআউট ভিউয়ার",
+        "tray-converter-tool": "লিপি রূপান্তরকারী",
+        "tray-dict-manager": "ডিকশনারি ম্যানেজার",
+        "tray-ai-assistant": "এআই রাইটিং সহকারী",
+        "tray-sound-toggle": "টাইপিং সাউন্ড ইফেক্ট",
+        "tray-settings": "সেটিংস",
+        "tray-reload-engine": "রিলোড ইঞ্জিন",
+        "tray-quit-app": "অ্যাপ বন্ধ করুন"
+      },
+      en: {
+        "brand-name": "Matra Keyboard",
+        "app-subtitle": "State of the art Bengali typing environment",
+        "nav-app-window": "Keyboard Window",
+        "nav-tray-menu": "Tray Menu",
+        "sidebar-menu-title": "Navigation Panel",
+        "menu-typeface": "Typeface & Layout",
+        "menu-font": "Font Selection",
+        "menu-dictionary": "Custom Dictionary",
+        "menu-converter": "Script Converter",
+        "menu-ai": "AI Integration",
+        "menu-settings": "Settings",
+        "engine-status": "Engine Status",
+        "studio-heading": "Typing Studio & Phonetic Drafter",
+        "studio-desc": "Type phonetically with instant prompt suggestions",
+        "layout-label": "Layout:",
+        "popover-title": "Suggestion List",
+        "candidate-bar-title": "Hotkey Candidate Bar",
+        "settings-title": "Keyboard Settings & Personalization",
+        "settings-subtitle": "Customize your typing and visual experience",
+        "icon-select-title": "Select Application Icon",
+        "icon-desc": "Change application brand icon in real-time",
+        "icon-orange-label": "Signature Orange",
+        "icon-orange-sub": "Default Classic",
+        "icon-dark-label": "Obsidian Dark",
+        "icon-dark-sub": "Stealth Black",
+        "icon-light-label": "Pure Ivory",
+        "icon-light-sub": "Modern Clean",
+        "dock-variants-title": "Top Dock & Bar Variant Overview (5 Full Styles)",
+        "dock-variant-1": "Slim Searchbar Dock",
+        "dock-variant-2": "OLED Nano Capsule",
+        "dock-variant-3": "macOS Crystal Dock",
+        "dock-variant-4": "Tactile Mechanical Keypad",
+        "dock-variant-5": "Floating Micro Minimal Badge",
+        "dock-v1-label": "Slim Searchbar",
+        "dock-v2-label": "Nano Capsule",
+        "dock-v3-label": "macOS Dock",
+        "dock-v4-label": "Mechanical",
+        "dock-v5-label": "Micro Badge",
+        "theme-select-title": "Theme Selection & Customization",
+        "theme-subtitle": "6 Premium Theme Palettes",
+        "theme-default": "Default Orange",
+        "theme-oled": "Pure OLED Dark",
+        "theme-nordic": "Nordic Light Blue",
+        "theme-ivory": "Warm Ivory",
+        "theme-sunset": "Sunset Amber",
+        "theme-emerald": "Emerald Neon",
+        "customize-theme-title": "Customize Theme",
+        "accent-picker-label": "Accent Color:",
+        "slider-opacity": "Glass Opacity",
+        "slider-blur": "Blur Intensity",
+        "shortcuts-title": "Language Toggle Shortcut",
+        "startup-title": "Launch on Startup",
+        "startup-desc": "Starts quietly in the background when your computer boots",
+        "font-title": "Font Selection & Rendering",
+        "font-desc": "System and web typography preview and custom font management",
+        "standard-fonts-title": "Standard Bengali Font List",
+        "custom-font-heading": "Upload & Add Custom Font",
+        "custom-font-desc": "Drag and drop your own TTF, OTF, or WOFF font files to install",
+        "btn-install-font": "Install Font",
+        "font-drop-prompt": "Drop font files here or click to browse",
+        "dict-title": "Custom Dictionary & Autocorrect",
+        "dict-desc": "Manage new words and text expansion macros",
+        "dict-add-btn": "Add Word",
+        "converter-title": "Script Converter (ANSI to Unicode)",
+        "converter-desc": "Seamlessly convert between Bijoy ANSI and Unicode",
+        "ai-title": "AI Bengali Writing Assistant",
+        "ai-desc": "Smart prompting and grammatical analyzer engine",
+        "ai-status-active": "API Key Active",
+        "ai-api-key-label": "Custom AI API Key",
+        "ai-model-label": "AI Engine Model",
+        "ai-quick-tools-title": "Quick AI Commands & Analysis Tools:",
+        "ai-cmd-grammar": "Fix Spelling & Grammar",
+        "ai-cmd-formal": "Convert to Formal Tone",
+        "ai-cmd-summarize": "Summarize Text",
+        "ai-cmd-poetic": "Poetic Transformation",
+        "copyright-text": "All rights reserved © Matra Keyboard",
+        "tray-status": "Avro Phonetic Active",
+        "tray-lang-bn": "Bengali",
+        "tray-layout-title": "Select Active Layout",
+        "tray-layout-avro": "Phonetic",
+        "tray-layout-bijoy": "National / Bijoy",
+        "tray-layout-probhat": "Probhat",
+        "tray-open-ui": "Open Keyboard Interface",
+        "tray-virtual-viewer": "Virtual Layout Viewer",
+        "tray-converter-tool": "Script Converter Tool",
+        "tray-dict-manager": "Custom Dictionary Manager",
+        "tray-ai-assistant": "AI Writing Assistant",
+        "tray-sound-toggle": "Typing Sound Effects",
+        "tray-settings": "Settings",
+        "tray-reload-engine": "Reload Engine",
+        "tray-quit-app": "Quit Application"
+      }
+    };
+
+    // Toggle between pure Bengali and English
+    function toggleLanguage() {
+      currentLang = currentLang === 'bn' ? 'en' : 'bn';
+      document.getElementById('lang-indicator').textContent = currentLang === 'bn' ? 'English' : 'বাংলা';
+      
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    // View Switcher (Main App Window vs System Tray Popover)
+    function switchView(view) {
+      const appView = document.getElementById('view-app');
+      const trayView = document.getElementById('view-tray');
+      const btnApp = document.getElementById('btn-view-app');
+      const btnTray = document.getElementById('btn-view-tray');
+
+      if (view === 'app') {
+        appView.classList.remove('hidden');
+        trayView.classList.add('hidden');
+        btnApp.classList.add('bg-brand-500', 'text-white');
+        btnApp.classList.remove('text-zinc-400');
+        btnTray.classList.remove('bg-brand-500', 'text-white');
+        btnTray.classList.add('text-zinc-400');
+      } else {
+        appView.classList.add('hidden');
+        trayView.classList.remove('hidden');
+        btnTray.classList.add('bg-brand-500', 'text-white');
+        btnTray.classList.remove('text-zinc-400');
+        btnApp.classList.remove('bg-brand-500', 'text-white');
+        btnApp.classList.add('text-zinc-400');
+      }
+    }
+
+    // Sidebar Tab Switcher
+    function setTab(tabName) {
+      const tabs = ['typing', 'font', 'dict', 'converter', 'ai', 'settings'];
+      tabs.forEach(t => {
+        const content = document.getElementById(`content-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (content) content.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('bg-brand-500/15', 'text-brand-400', 'border', 'border-brand-500/30');
+          btn.classList.add('text-zinc-400');
+        }
+      });
+
+      const activeContent = document.getElementById(`content-${tabName}`);
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeContent) activeContent.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-500/15', 'text-brand-400', 'border', 'border-brand-500/30');
+        activeBtn.classList.remove('text-zinc-400');
+      }
+    }
+
+    // Live Glass Opacity Slider Handler
+    function updateOpacity(val) {
+      const decimal = (val / 100).toFixed(2);
+      document.documentElement.style.setProperty('--glass-opacity', decimal);
+      document.getElementById('opacity-val-label').textContent = `${val}%`;
+    }
+
+    // Live Blur Intensity Slider Handler
+    function updateBlur(val) {
+      document.documentElement.style.setProperty('--glass-blur', `${val}px`);
+      document.getElementById('blur-val-label').textContent = `${val}px`;
+    }
+
+    // App Icon Selection
+    function setAppIcon(type, src) {
+      document.getElementById('header-app-logo').src = src;
+      document.getElementById('tray-app-logo').src = src;
+
+      const tiles = ['orange', 'dark', 'light'];
+      tiles.forEach(t => {
+        const tile = document.getElementById(`icon-tile-${t}`);
+        if (t === type) {
+          tile.classList.add('border-2', 'border-brand-500', 'bg-brand-500/10');
+          tile.classList.remove('border-white/10', 'bg-white/5');
+        } else {
+          tile.classList.remove('border-2', 'border-brand-500', 'bg-brand-500/10');
+          tile.classList.add('border', 'border-white/10', 'bg-white/5');
+        }
+      });
+    }
+
+    // Top Dock / Bar Variant Switcher (1 to 5)
+    let activeDockIdx = 1;
+    function setDockVariant(num) {
+      activeDockIdx = num;
+      for (let i = 1; i <= 5; i++) {
+        const preview = document.getElementById(`dock-preview-v${i}`);
+        const card = document.getElementById(`dock-card-${i}`);
+        if (i === num) {
+          preview.classList.remove('hidden');
+          preview.classList.add('flex');
+          card.classList.add('border-brand-500', 'bg-brand-500/15');
+          card.classList.remove('border-white/10');
+        } else {
+          preview.classList.add('hidden');
+          preview.classList.remove('flex');
+          card.classList.remove('border-brand-500', 'bg-brand-500/15');
+        }
+      }
+      const activeLabelKey = `dock-variant-${num}`;
+      document.getElementById('active-dock-name').textContent = translations[currentLang][activeLabelKey] || '';
+      document.getElementById('active-dock-name').setAttribute('data-i18n', activeLabelKey);
+    }
+
+    // Theme Preset Selector
+    function selectThemePreset(accent, opacity, blur, tileId) {
+      setCustomAccent(accent);
+      document.getElementById('slider-opacity').value = opacity;
+      updateOpacity(opacity);
+      document.getElementById('slider-blur').value = blur;
+      updateBlur(blur);
+      document.getElementById('accent-color-picker').value = accent;
+
+      const allTiles = ['theme-tile-default', 'theme-tile-oled', 'theme-tile-nordic', 'theme-tile-ivory', 'theme-tile-sunset', 'theme-tile-emerald'];
+      allTiles.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === tileId) {
+          el.classList.add('border-brand-500', 'bg-brand-500/10');
+        } else {
+          el.classList.remove('border-brand-500', 'bg-brand-500/10');
+        }
+      });
+    }
+
+    // Custom Accent Color Setter
+    function setCustomAccent(color) {
+      document.documentElement.style.setProperty('--brand-accent', color);
+      document.querySelectorAll('.bg-brand-500').forEach(el => {
+        el.style.backgroundColor = color;
+      });
+      document.querySelectorAll('.text-brand-400').forEach(el => {
+        el.style.color = color;
+      });
+    }
+
+    // Cycle accent color
+    const accentColors = ['#f97316', '#3b82f6', '#10b981', '#a855f7', '#ec4899', '#38bdf8'];
+    let currentAccentIdx = 0;
+    function cycleAccentColor() {
+      currentAccentIdx = (currentAccentIdx + 1) % accentColors.length;
+      const nextColor = accentColors[currentAccentIdx];
+      setCustomAccent(nextColor);
+      document.getElementById('accent-color-picker').value = nextColor;
+    }
+
+    // Toggle API Key Visibility
+    function toggleApiKeyVisibility() {
+      const field = document.getElementById('ai-api-key-field');
+      if (field.type === 'password') {
+        field.type = 'text';
+      } else {
+        field.type = 'password';
+      }
+    }
+  </script>
+
+
+</body></html>

@@ -1,0 +1,63 @@
+{
+  "name": "matra-keyboard",
+  "version": "1.0.0",
+  "description": "Matra Keyboard — Modern Bengali Desktop Keyboard & Typing Utility",
+  "main": "dist-electron/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.matra.keyboard",
+    "productName": "Matra Keyboard",
+    "copyright": "Copyright © 2026 Matra Keyboard Team",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "resources/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Matra Keyboard",
+      "installerIcon": "resources/icon.ico",
+      "uninstallerIcon": "resources/icon.ico"
+    }
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "bengali",
+    "keyboard",
+    "typing",
+    "electron",
+    "transliteration",
+    "phonetic"
+  ],
+  "author": "Matra Keyboard Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "34.2.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^6.2.0",
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-electron-renderer": "^0.14.6"
+  }
+}

@@ -1,0 +1,78 @@
+/* Base & Reset Styles */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-obsidian-950);
+  font-family: var(--font-sans);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(249, 115, 22, 0.04) 0px, transparent 70%);
+  background-attachment: fixed;
+  color: #f4f4f5;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* Typography utilities */
+.font-bengali {
+  font-family: var(--font-bengali);
+  line-height: 1.45; /* Prevents Bengali matra / ascender / descender glyph clipping */
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Caret blink animation */
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.caret-pulse {
+  animation: caret-blink 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Range input accent styling */
+input[type="range"] {
+  accent-color: var(--brand-accent);
+}
+
+/* Utility hide class */
+.hidden {
+  display: none !important;
+}
