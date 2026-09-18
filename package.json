@@ -5,8 +5,9 @@
   "main": "dist-electron/main/index.js",
   "type": "module",
   "scripts": {
+    "compile:native": "node scripts/build-native.js",
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/build-native.js && vite build",
     "preview": "vite preview",
     "start": "electron .",
     "pack": "electron-builder --dir",
@@ -23,6 +24,15 @@
       "dist/**/*",
       "dist-electron/**/*",
       "resources/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/bin",
+        "to": "bin",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "asarUnpack": [
       "**/node_modules/koffi/**/*"

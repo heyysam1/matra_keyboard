@@ -135,7 +135,26 @@ Unless signed with a valid Microsoft EV or standard Authenticode Code-Signing Ce
   2. **Cumulative Hook Execution Latency:** Verified through live hardware tests typing 10+ character words into external applications (`notepad.exe`). Per-keystroke native execution time averages **0.10–0.12 ms** (maximum <0.20 ms, backspace ~0.07 ms), orders of magnitude below the 1000ms `WH_KEYBOARD_LL` OS timeout and human perception threshold.
   3. **Key-Up / Key-Down Symmetrical Suppression:** The hook maintains an active set of currently suppressed virtual keys (`suppressedVkCodes`). Key-up events are only swallowed if the corresponding key-down was actually swallowed. Unmapped keys in fixed layouts (e.g., F1–F12 function keys, navigation arrows, Delete) and Backspace when the phonetic composition buffer is empty pass through symmetrically on both key-down and key-up, preventing stuck keys in target applications.
   4. **Digit Key Handling (Explicit Decision):** Numeric keys (`0`–`9`) pass through natively as standard Latin digits (`'0'`–`'9'`) in both English and Bengali modes. In standard Bengali desktop computing (such as default Avro Keyboard behavior), numeric keys produce Latin digits by default to accommodate programming, financial, and formula entries; Bengali numerals (০-৯) are available via character mapping or layout converters.
-  5. **In-App Suggestion Popover vs. System-Wide Auto-Commit:** System-wide typing performs direct phonetic composition with auto-commitment on word boundaries (Space, Enter, Tab, punctuation). The full 5-candidate keyboard-navigable suggestion popover is active inside the in-app Typing Studio.
+  5. **System-Wide Suggestion Popover & Caret Tracking:**
+     - **Interactive 5-Candidate Popover:** When typing Bengali phonetic input into external applications (Notepad, Word, web browsers, Electron apps, etc.), an obsidian glassmorphism popover appears adjacent to the active text caret displaying up to 5 transliterated candidates.
+     - **Three-Tier Caret Detection Fallback Chain:**
+       1. *UI Automation (UIA):* Native helper (`resources/bin/CaretDetector.exe`) queries `TextPattern2.GetCaretRange()` or `TextPattern.GetSelection()` for rich controls, modern browsers, Microsoft Office, and UWP apps.
+       2. *Win32 GetGUIThreadInfo:* Queries the target thread's `GUITHREADINFO.rcCaret` and converts via `ClientToScreen` for standard Win32 edit controls (such as Windows 11 Notepad).
+       3. *Target Window Client Area Fallback:* Centers the popover relative to the target window's top-left work area if caret coordinates cannot be obtained, with screen-boundary clamping and bottom-of-screen flipping.
+     - **Asynchronous Dispatch Outside Hook:** Caret detection and popover rendering are dispatched asynchronously (`setImmediate`) outside the synchronous `WH_KEYBOARD_LL` hook, ensuring hook callback latency remains sub-millisecond (~0.10–0.15 ms) without triggering Windows hook timeouts.
+     - **Interactive Controls:**
+       - Digits `1`–`5`: Selects and commits candidate 1–5 with backspace-and-replace, commits buffer, and closes popover.
+       - Arrow Up / Down: Cycles candidate selection highlight visually.
+       - Space / Enter: Commits the currently highlighted candidate to the target document.
+       - Escape: Dismisses the popover immediately without altering the already-typed live text preview.
+       - Backspace: Updates the composition buffer and candidate list; closes the popover when the buffer empties.
+     - **Non-Focus-Stealing Architecture & Dismissal:** The overlay window uses native `WS_EX_NOACTIVATE (0x08000000)` and `WS_EX_TOPMOST` styles so it never steals OS focus from the target application. A global low-level mouse hook (`WH_MOUSE_LL`) and active window event hook (`SetWinEventHook` with `EVENT_SYSTEM_FOREGROUND`) dismiss the popover immediately if the user clicks outside or switches foreground windows.
+     - **Named App Matrix Results:**
+       - *Notepad (Win32 edit control):* Caret detected via `GetGUIThreadInfo` (`method: GUI`).
+       - *Microsoft Word / Office:* Caret detected via UI Automation (`method: UIA`).
+       - *Chromium Browsers (Edge, Chrome):* Caret detected via UI Automation (`method: UIA`).
+       - *Electron Apps (Discord, Slack):* Caret detected via UI Automation / window client anchor (`method: UIA` / `fallback`).
+       - *Windows UWP Apps:* Caret detected via UI Automation (`method: UIA`).
   6. **Mid-Composition Backspacing:** Backspacing during active phonetic composition deletes previously injected Unicode clusters and re-transliterates remaining characters. While seamless in standard Win32 and Chromium editors (Notepad, Edge, Chrome), rich text editors with complex ligature clustering may handle mid-conjunct cursor edits differently.
   7. **Clipboard-Paste Fallback:** In addition to standard `SendInputW` Unicode injection, a user-selectable Clipboard-Paste mode is available in Settings, which captures the text, injects via simulated `Ctrl+V`, and automatically restores the user's prior clipboard buffer within 50ms.
   8. **IME Coexistence Scanner:** Matra Keyboard actively checks for running processes of other Bengali keyboard tools (`Avro Keyboard.exe`, `BijoyBayanno.exe`, `Bijoy 52.exe`, `OpenBangla Keyboard.exe`) to warn the user against running multiple global hooks concurrently.

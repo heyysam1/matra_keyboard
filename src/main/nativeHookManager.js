@@ -8,6 +8,15 @@ import koffi from 'koffi';
 import { exec } from 'node:child_process';
 import { transliterateOffline, transliteratePhoneticRaw } from '../engine/OfflinePhoneticEngine.js';
 import { LayoutManager } from '../engine/LayoutManager.js';
+import { detectCaretPosition } from './caretPositionManager.js';
+import {
+  initPopoverOverlay,
+  showPopover,
+  updatePopoverSelection,
+  hidePopover,
+  isPopoverVisible,
+  destroyPopoverOverlay
+} from './popoverOverlayManager.js';
 import { logger } from './logger.js';
 
 // Custom injection signature so hook can identify and ignore its own simulated events
@@ -33,6 +42,8 @@ const VK_MENU = 0x12; // Alt
 const VK_ESCAPE = 0x1B;
 const VK_SPACE = 0x20;
 const VK_CAPITAL = 0x14; // CapsLock
+const VK_UP = 0x26;
+const VK_DOWN = 0x28;
 const VK_LWIN = 0x5B;
 const VK_RWIN = 0x5C;
 const VK_OEM_PERIOD = 0xBE;
@@ -48,6 +59,8 @@ let injectionMethod = 'sendinput'; // 'sendinput' | 'clipboard'
 
 let activeWordBuffer = '';
 let injectedLength = 0; // Number of UTF-16 code units currently injected for active word
+let activeCandidates = [];
+let selectedCandidateIndex = 0;
 
 // Set of currently suppressed Virtual Key codes to mirror KeyDown suppression on KeyUp
 const suppressedVkCodes = new Set();
@@ -97,6 +110,16 @@ export function initNativeHook(mainWindow) {
       logger.error('[NativeHookManager] Failed to install SetWindowsHookExW.');
     }
 
+    // Initialize System-Wide Suggestion Popover Overlay
+    initPopoverOverlay((reason) => {
+      // Dismissal on outside click or foreground switch
+      activeWordBuffer = '';
+      injectedLength = 0;
+      activeCandidates = [];
+      selectedCandidateIndex = 0;
+      suppressedVkCodes.clear();
+    });
+
     // Check for other IME processes (Avro / Bijoy coexistence)
     checkOtherImeProcesses();
 
@@ -108,6 +131,9 @@ export function initNativeHook(mainWindow) {
 export function destroyNativeHook() {
   try {
     suppressedVkCodes.clear();
+    hidePopover();
+    destroyPopoverOverlay();
+
     if (hookHandle && UnhookWindowsHookEx) {
       UnhookWindowsHookEx(hookHandle);
       hookHandle = null;
@@ -126,7 +152,10 @@ export function setHookMode(mode) {
   activeMode = mode === 'en' ? 'en' : 'bn';
   activeWordBuffer = '';
   injectedLength = 0;
+  activeCandidates = [];
+  selectedCandidateIndex = 0;
   suppressedVkCodes.clear();
+  hidePopover();
   logger.info(`[NativeHookManager] Active mode updated to: ${activeMode}`);
 }
 
@@ -134,7 +163,10 @@ export function setHookLayout(layout) {
   activeLayout = layout || 'avro';
   activeWordBuffer = '';
   injectedLength = 0;
+  activeCandidates = [];
+  selectedCandidateIndex = 0;
   suppressedVkCodes.clear();
+  hidePopover();
   logger.info(`[NativeHookManager] Active layout updated to: ${activeLayout}`);
 }
 
@@ -145,6 +177,36 @@ export function setInjectionMethod(method) {
 
 export function getConflictingImes() {
   return [...conflictingImesFound];
+}
+
+// Asynchronous Popover Update: Never blocks the synchronous WH_KEYBOARD_LL hook callback
+function dispatchPopoverAsync(hwnd, word, candidates, selIdx) {
+  setImmediate(async () => {
+    try {
+      if (!word || !candidates || candidates.length === 0) {
+        hidePopover();
+        return;
+      }
+
+      let hwndAddr = 0;
+      if (typeof hwnd === 'number') {
+        hwndAddr = hwnd;
+      } else if (hwnd) {
+        try {
+          hwndAddr = Number(koffi.address(hwnd));
+        } catch (_e) {
+          hwndAddr = 0;
+        }
+      }
+
+      const pos = await detectCaretPosition(hwndAddr);
+      if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') {
+        showPopover(pos.x, pos.y, candidates, selIdx, word);
+      }
+    } catch (err) {
+      logger.warn('[NativeHookManager] Error updating popover position:', err.message);
+    }
+  });
 }
 
 // Low-Level Keyboard Hook Callback
@@ -169,6 +231,7 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
       if (fgHwndAddr && fgHwndAddr === mainHwndAddr) {
         // Matra app has focus; let in-app typing studio handle input natively
         suppressedVkCodes.clear();
+        hidePopover();
         return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
       }
     } catch (_e) {
@@ -180,7 +243,10 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   if (activeMode === 'en') {
     activeWordBuffer = '';
     injectedLength = 0;
+    activeCandidates = [];
+    selectedCandidateIndex = 0;
     suppressedVkCodes.clear();
+    hidePopover();
     return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
@@ -206,6 +272,9 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   if (isCtrl || isAlt || isWin) {
     activeWordBuffer = '';
     injectedLength = 0;
+    activeCandidates = [];
+    selectedCandidateIndex = 0;
+    hidePopover();
     suppressedVkCodes.delete(vk);
     return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
@@ -221,7 +290,7 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   // A. AVRO PHONETIC MODE
   // -------------------------------------------------------------
   if (activeLayout === 'avro') {
-    // 1. Letters A-Z (Phonetic token building)
+    // 1. Letters A-Z (Phonetic token building + Live Preview + Popover update)
     if (vk >= 0x41 && vk <= 0x5A) {
       let char = String.fromCharCode(vk);
       if (!(isShift ^ isCaps)) {
@@ -237,83 +306,182 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
         sendBackspaces(injectedLength);
       }
 
-      // Inject new transliteration
+      // Inject new transliteration live-preview
       injectUnicodeString(newWord);
       injectedLength = newWord.length;
+
+      activeCandidates = candidates.slice(0, 5);
+      selectedCandidateIndex = 0;
+
+      // Dispatched asynchronously outside the hook callback (<0.15ms hook response)
+      dispatchPopoverAsync(GetForegroundWindow ? GetForegroundWindow() : null, activeWordBuffer, activeCandidates, selectedCandidateIndex);
 
       suppressedVkCodes.add(vk);
       return 1; // Suppress original key from reaching target app
     }
 
-    // 2. Backspace during active composition
-    if (vk === VK_BACK) {
-      if (activeWordBuffer.length > 0) {
-        activeWordBuffer = activeWordBuffer.slice(0, -1);
+    // 2. Candidate Selection via Number Keys 1–5 (when popover is active)
+    if (vk >= 0x31 && vk <= 0x35) {
+      if (activeWordBuffer.length > 0 && activeCandidates.length > 0) {
+        const chosenIdx = vk - 0x31;
+        if (chosenIdx < activeCandidates.length) {
+          const chosenWord = activeCandidates[chosenIdx];
+          const currentTop = activeCandidates[0] || transliteratePhoneticRaw(activeWordBuffer);
 
-        if (injectedLength > 0) {
-          sendBackspaces(injectedLength);
-        }
+          // If chosen candidate differs from currently injected top candidate, replace it
+          if (chosenWord !== currentTop) {
+            sendBackspaces(injectedLength);
+            injectUnicodeString(chosenWord);
+          }
 
-        if (activeWordBuffer.length > 0) {
-          const candidates = transliterateOffline(activeWordBuffer);
-          const newWord = candidates[0] || transliteratePhoneticRaw(activeWordBuffer);
-          injectUnicodeString(newWord);
-          injectedLength = newWord.length;
-        } else {
+          activeWordBuffer = '';
           injectedLength = 0;
+          activeCandidates = [];
+          selectedCandidateIndex = 0;
+          hidePopover();
+
+          suppressedVkCodes.add(vk);
+          return 1; // Swallow digit key and commit selected candidate
         }
+      }
+    }
+
+    // 3. Arrow Up / Down (cycles highlighted candidate in popover; visual only)
+    if (activeWordBuffer.length > 0 && activeCandidates.length > 1 && (vk === VK_UP || vk === VK_DOWN)) {
+      if (vk === VK_DOWN) {
+        selectedCandidateIndex = (selectedCandidateIndex + 1) % activeCandidates.length;
+      } else {
+        selectedCandidateIndex = (selectedCandidateIndex - 1 + activeCandidates.length) % activeCandidates.length;
+      }
+
+      updatePopoverSelection(selectedCandidateIndex);
+      suppressedVkCodes.add(vk);
+      return 1; // Swallow arrow key from moving cursor in target app
+    }
+
+    // 4. Space / Enter (Commits active candidate + sends Space/Enter to target app)
+    if (vk === VK_SPACE || vk === VK_RETURN) {
+      if (activeWordBuffer.length > 0) {
+        // If candidate was changed via arrow keys from default #0, re-inject before committing
+        if (selectedCandidateIndex > 0 && selectedCandidateIndex < activeCandidates.length) {
+          const chosenWord = activeCandidates[selectedCandidateIndex];
+          sendBackspaces(injectedLength);
+          injectUnicodeString(chosenWord);
+        }
+
+        activeWordBuffer = '';
+        injectedLength = 0;
+        activeCandidates = [];
+        selectedCandidateIndex = 0;
+        hidePopover();
+      }
+
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+    }
+
+    // 5. Escape (Closes popover without changing injected text)
+    if (vk === VK_ESCAPE) {
+      if (activeWordBuffer.length > 0) {
+        activeWordBuffer = '';
+        injectedLength = 0;
+        activeCandidates = [];
+        selectedCandidateIndex = 0;
+        hidePopover();
+
+        suppressedVkCodes.add(vk);
+        return 1; // Swallow Escape
+      }
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+    }
+
+    // 6. Backspace during active composition
+    if (vk === VK_BACK) {
+      if (activeWordBuffer.length > 1) {
+        activeWordBuffer = activeWordBuffer.slice(0, -1);
+        sendBackspaces(injectedLength);
+
+        const candidates = transliterateOffline(activeWordBuffer);
+        const newWord = candidates[0] || transliteratePhoneticRaw(activeWordBuffer);
+        injectUnicodeString(newWord);
+        injectedLength = newWord.length;
+
+        activeCandidates = candidates.slice(0, 5);
+        selectedCandidateIndex = 0;
+        dispatchPopoverAsync(GetForegroundWindow ? GetForegroundWindow() : null, activeWordBuffer, activeCandidates, selectedCandidateIndex);
+
+        suppressedVkCodes.add(vk);
+        return 1;
+      } else if (activeWordBuffer.length === 1) {
+        activeWordBuffer = '';
+        sendBackspaces(injectedLength);
+        injectedLength = 0;
+        activeCandidates = [];
+        selectedCandidateIndex = 0;
+        hidePopover();
 
         suppressedVkCodes.add(vk);
         return 1; // Suppress original Backspace
       }
 
-      // Buffer already empty; let Backspace pass through natively to delete foreign text
+      // Buffer already empty; pass through natively
+      hidePopover();
       injectedLength = 0;
       suppressedVkCodes.delete(vk);
       return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
-    // 3. Space (Commit active word + space)
-    if (vk === VK_SPACE) {
-      activeWordBuffer = '';
-      injectedLength = 0;
-      suppressedVkCodes.delete(vk);
-      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
-    }
-
-    // 4. Enter / Tab / Escape / Navigation Keys (Word delimiters)
-    if (vk === VK_RETURN || vk === VK_TAB || vk === VK_ESCAPE || (vk >= 0x21 && vk <= 0x28)) {
-      activeWordBuffer = '';
-      injectedLength = 0;
-      suppressedVkCodes.delete(vk);
-      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
-    }
-
-    // 5. Period (Full stop -> Dari '।' conversion)
+    // 7. Period (Full stop -> Dari '।' conversion)
     if (vk === VK_OEM_PERIOD) {
       if (activeWordBuffer.length > 0) {
+        if (selectedCandidateIndex > 0 && selectedCandidateIndex < activeCandidates.length) {
+          const chosenWord = activeCandidates[selectedCandidateIndex];
+          sendBackspaces(injectedLength);
+          injectUnicodeString(chosenWord);
+        }
         activeWordBuffer = '';
         injectedLength = 0;
+        activeCandidates = [];
+        selectedCandidateIndex = 0;
+        hidePopover();
       }
       injectUnicodeString('।');
       suppressedVkCodes.add(vk);
       return 1; // Suppress '.' and inject Dari
     }
 
-    // 6. Digit Keys (0-9): Explicit decision — pass through as Latin numerals (0-9)
-    // In standard Bengali phonetic typing, digit keys produce Latin numerals by default.
+    // 8. Digit Keys (0-9): Explicit decision — pass through as Latin numerals (0-9)
     if (vk >= 0x30 && vk <= 0x39) {
       if (activeWordBuffer.length > 0) {
+        if (selectedCandidateIndex > 0 && selectedCandidateIndex < activeCandidates.length) {
+          const chosenWord = activeCandidates[selectedCandidateIndex];
+          sendBackspaces(injectedLength);
+          injectUnicodeString(chosenWord);
+        }
         activeWordBuffer = '';
         injectedLength = 0;
+        activeCandidates = [];
+        selectedCandidateIndex = 0;
+        hidePopover();
       }
       suppressedVkCodes.delete(vk);
       return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
     // Any other key: commit active buffer and pass through
-    activeWordBuffer = '';
-    injectedLength = 0;
+    if (activeWordBuffer.length > 0) {
+      if (selectedCandidateIndex > 0 && selectedCandidateIndex < activeCandidates.length) {
+        const chosenWord = activeCandidates[selectedCandidateIndex];
+        sendBackspaces(injectedLength);
+        injectUnicodeString(chosenWord);
+      }
+      activeWordBuffer = '';
+      injectedLength = 0;
+      activeCandidates = [];
+      selectedCandidateIndex = 0;
+      hidePopover();
+    }
     suppressedVkCodes.delete(vk);
     return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
@@ -322,6 +490,7 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   // B. FIXED LAYOUT MODES (Bijoy / Probhat)
   // -------------------------------------------------------------
   if (activeLayout === 'bijoy' || activeLayout === 'probhat') {
+    hidePopover();
     const keyChar = vkToChar(vk, isShift, isCaps);
     if (keyChar) {
       const mapped = LayoutManager.mapKey(activeLayout, keyChar, isShift);
@@ -339,7 +508,7 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
 }
 
-// Test Helper: allows automated tests to verify hook event handling without full OS hooks
+// Test Helpers: allows automated tests to verify hook event handling without full OS hooks
 export function processHookEventForTesting(wParam, vkCode, dwExtraInfo = 0, shiftState = false, capsState = false) {
   const lParam = {
     vkCode,
@@ -353,6 +522,18 @@ export function processHookEventForTesting(wParam, vkCode, dwExtraInfo = 0, shif
 
 export function getSuppressedVkCodesForTesting() {
   return new Set(suppressedVkCodes);
+}
+
+export function getActiveCandidatesForTesting() {
+  return [...activeCandidates];
+}
+
+export function getSelectedCandidateIndexForTesting() {
+  return selectedCandidateIndex;
+}
+
+export function getActiveWordBufferForTesting() {
+  return activeWordBuffer;
 }
 
 // Translate Virtual Key Code to printable ASCII character
