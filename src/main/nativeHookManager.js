@@ -49,6 +49,9 @@ let injectionMethod = 'sendinput'; // 'sendinput' | 'clipboard'
 let activeWordBuffer = '';
 let injectedLength = 0; // Number of UTF-16 code units currently injected for active word
 
+// Set of currently suppressed Virtual Key codes to mirror KeyDown suppression on KeyUp
+const suppressedVkCodes = new Set();
+
 let conflictingImesFound = [];
 
 // Win32 Structs & Functions via Koffi
@@ -104,6 +107,7 @@ export function initNativeHook(mainWindow) {
 
 export function destroyNativeHook() {
   try {
+    suppressedVkCodes.clear();
     if (hookHandle && UnhookWindowsHookEx) {
       UnhookWindowsHookEx(hookHandle);
       hookHandle = null;
@@ -122,6 +126,7 @@ export function setHookMode(mode) {
   activeMode = mode === 'en' ? 'en' : 'bn';
   activeWordBuffer = '';
   injectedLength = 0;
+  suppressedVkCodes.clear();
   logger.info(`[NativeHookManager] Active mode updated to: ${activeMode}`);
 }
 
@@ -129,6 +134,7 @@ export function setHookLayout(layout) {
   activeLayout = layout || 'avro';
   activeWordBuffer = '';
   injectedLength = 0;
+  suppressedVkCodes.clear();
   logger.info(`[NativeHookManager] Active layout updated to: ${activeLayout}`);
 }
 
@@ -142,27 +148,28 @@ export function getConflictingImes() {
 }
 
 // Low-Level Keyboard Hook Callback
-function lowLevelKeyboardProc(nCode, wParam, lParam) {
+function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   if (nCode < 0) {
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
   // 1. Bypass self-injected keystrokes immediately to prevent infinite loops
   const extraInfo = Number(lParam.dwExtraInfo);
   if (extraInfo === MATRA_EXTRA_INFO) {
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
   // 2. Bypass if Matra Keyboard itself is in the foreground
   if (mainWindowRef && !mainWindowRef.isDestroyed()) {
     try {
-      const fgHwnd = GetForegroundWindow();
+      const fgHwnd = GetForegroundWindow ? GetForegroundWindow() : null;
       const mainHwndBuf = mainWindowRef.getNativeWindowHandle();
       const mainHwndAddr = Number(mainHwndBuf.readBigUInt64LE(0));
-      const fgHwndAddr = Number(koffi.address(fgHwnd));
-      if (fgHwndAddr === mainHwndAddr) {
+      const fgHwndAddr = fgHwnd ? Number(koffi.address(fgHwnd)) : 0;
+      if (fgHwndAddr && fgHwndAddr === mainHwndAddr) {
         // Matra app has focus; let in-app typing studio handle input natively
-        return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+        suppressedVkCodes.clear();
+        return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
       }
     } catch (_e) {
       // Fallback: proceed
@@ -173,42 +180,42 @@ function lowLevelKeyboardProc(nCode, wParam, lParam) {
   if (activeMode === 'en') {
     activeWordBuffer = '';
     injectedLength = 0;
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    suppressedVkCodes.clear();
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+  }
+
+  const vk = lParam.vkCode;
+  const isKeyDown = (wParam === WM_KEYDOWN || wParam === WM_SYSKEYDOWN);
+  const isKeyUp = (wParam === WM_KEYUP || wParam === WM_SYSKEYUP);
+
+  // KeyUp Handling: strictly mirror KeyDown suppression to prevent stuck keys
+  if (isKeyUp) {
+    if (suppressedVkCodes.has(vk)) {
+      suppressedVkCodes.delete(vk);
+      return 1; // Swallow matching key-up for the key-down that was suppressed
+    }
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
   // 4. Modifier Key Sweeps (Ctrl, Alt, Win)
-  const isCtrl = (GetAsyncKeyState(VK_CONTROL) & 0x8000) !== 0;
-  const isAlt = (GetAsyncKeyState(VK_MENU) & 0x8000) !== 0;
-  const isWin = ((GetAsyncKeyState(VK_LWIN) & 0x8000) !== 0) || ((GetAsyncKeyState(VK_RWIN) & 0x8000) !== 0);
+  const isCtrl = (GetAsyncKeyState && (GetAsyncKeyState(VK_CONTROL) & 0x8000) !== 0);
+  const isAlt = (GetAsyncKeyState && (GetAsyncKeyState(VK_MENU) & 0x8000) !== 0);
+  const isWin = GetAsyncKeyState && (((GetAsyncKeyState(VK_LWIN) & 0x8000) !== 0) || ((GetAsyncKeyState(VK_RWIN) & 0x8000) !== 0));
 
   // If any standard modifier is held (e.g. Ctrl+C, Alt+Tab, Win+R), flush buffer and pass through
   if (isCtrl || isAlt || isWin) {
     activeWordBuffer = '';
     injectedLength = 0;
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
-  }
-
-  const isShift = (GetAsyncKeyState(VK_SHIFT) & 0x8000) !== 0;
-  const isCaps = (GetKeyState(VK_CAPITAL) & 0x0001) !== 0;
-  const vk = lParam.vkCode;
-
-  const isKeyDown = (wParam === WM_KEYDOWN || wParam === WM_SYSKEYDOWN);
-  const isKeyUp = (wParam === WM_KEYUP || wParam === WM_SYSKEYUP);
-
-  // On KeyUp: swallow if it's a key we manage
-  if (isKeyUp) {
-    if (activeLayout === 'avro' && ((vk >= 0x41 && vk <= 0x5A) || vk === VK_BACK || vk === VK_OEM_PERIOD)) {
-      return 1;
-    }
-    if ((activeLayout === 'bijoy' || activeLayout === 'probhat') && (vk >= 0x20 && vk <= 0xDE)) {
-      return 1;
-    }
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    suppressedVkCodes.delete(vk);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
   if (!isKeyDown) {
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
+
+  const isShift = testOverrides ? testOverrides.shift : (GetAsyncKeyState && (GetAsyncKeyState(VK_SHIFT) & 0x8000) !== 0);
+  const isCaps = testOverrides ? testOverrides.caps : (GetKeyState && (GetKeyState(VK_CAPITAL) & 0x0001) !== 0);
 
   // -------------------------------------------------------------
   // A. AVRO PHONETIC MODE
@@ -234,6 +241,7 @@ function lowLevelKeyboardProc(nCode, wParam, lParam) {
       injectUnicodeString(newWord);
       injectedLength = newWord.length;
 
+      suppressedVkCodes.add(vk);
       return 1; // Suppress original key from reaching target app
     }
 
@@ -255,30 +263,30 @@ function lowLevelKeyboardProc(nCode, wParam, lParam) {
           injectedLength = 0;
         }
 
+        suppressedVkCodes.add(vk);
         return 1; // Suppress original Backspace
       }
 
       // Buffer already empty; let Backspace pass through natively to delete foreign text
       injectedLength = 0;
-      return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
     // 3. Space (Commit active word + space)
     if (vk === VK_SPACE) {
-      if (activeWordBuffer.length > 0) {
-        activeWordBuffer = '';
-        injectedLength = 0;
-        // Let space pass through to create word boundary in target app
-        return CallNextHookEx(hookHandle, nCode, wParam, lParam);
-      }
-      return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+      activeWordBuffer = '';
+      injectedLength = 0;
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
     // 4. Enter / Tab / Escape / Navigation Keys (Word delimiters)
     if (vk === VK_RETURN || vk === VK_TAB || vk === VK_ESCAPE || (vk >= 0x21 && vk <= 0x28)) {
       activeWordBuffer = '';
       injectedLength = 0;
-      return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
     // 5. Period (Full stop -> Dari '।' conversion)
@@ -288,13 +296,26 @@ function lowLevelKeyboardProc(nCode, wParam, lParam) {
         injectedLength = 0;
       }
       injectUnicodeString('।');
+      suppressedVkCodes.add(vk);
       return 1; // Suppress '.' and inject Dari
+    }
+
+    // 6. Digit Keys (0-9): Explicit decision — pass through as Latin numerals (0-9)
+    // In standard Bengali phonetic typing, digit keys produce Latin numerals by default.
+    if (vk >= 0x30 && vk <= 0x39) {
+      if (activeWordBuffer.length > 0) {
+        activeWordBuffer = '';
+        injectedLength = 0;
+      }
+      suppressedVkCodes.delete(vk);
+      return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
     }
 
     // Any other key: commit active buffer and pass through
     activeWordBuffer = '';
     injectedLength = 0;
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    suppressedVkCodes.delete(vk);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
   // -------------------------------------------------------------
@@ -306,13 +327,32 @@ function lowLevelKeyboardProc(nCode, wParam, lParam) {
       const mapped = LayoutManager.mapKey(activeLayout, keyChar, isShift);
       if (mapped) {
         injectUnicodeString(mapped);
+        suppressedVkCodes.add(vk);
         return 1; // Suppress original key and inject mapped glyph
       }
     }
-    return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    suppressedVkCodes.delete(vk);
+    return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
   }
 
-  return CallNextHookEx(hookHandle, nCode, wParam, lParam);
+  suppressedVkCodes.delete(vk);
+  return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+}
+
+// Test Helper: allows automated tests to verify hook event handling without full OS hooks
+export function processHookEventForTesting(wParam, vkCode, dwExtraInfo = 0, shiftState = false, capsState = false) {
+  const lParam = {
+    vkCode,
+    scanCode: 0,
+    flags: 0,
+    time: 0,
+    dwExtraInfo
+  };
+  return lowLevelKeyboardProc(0, wParam, lParam, { shift: shiftState, caps: capsState });
+}
+
+export function getSuppressedVkCodesForTesting() {
+  return new Set(suppressedVkCodes);
 }
 
 // Translate Virtual Key Code to printable ASCII character
