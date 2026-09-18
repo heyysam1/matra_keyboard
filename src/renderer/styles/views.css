@@ -258,6 +258,7 @@
 
 /* Suggestion Popover (Calibrated 20% narrower than 18rem/288px baseline -> 14.4rem/230px) */
 .suggestion-popover {
+  display: none;
   position: absolute;
   left: 1.5rem;
   top: 145px;

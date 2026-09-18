@@ -73,6 +73,7 @@ let SetWindowsHookExW = null;
 let UnhookWindowsHookEx = null;
 let CallNextHookEx = null;
 let GetForegroundWindow = null;
+let GetWindowThreadProcessId = null;
 let GetAsyncKeyState = null;
 let GetKeyState = null;
 let SendInput = null;
@@ -97,6 +98,7 @@ export function initNativeHook(mainWindow) {
     UnhookWindowsHookEx = user32.func('UnhookWindowsHookEx', 'bool', ['void*']);
     CallNextHookEx = user32.func('CallNextHookEx', 'intptr_t', ['void*', 'int', 'uintptr_t', 'KBDLLHOOKSTRUCT*']);
     GetForegroundWindow = user32.func('GetForegroundWindow', 'void*', []);
+    GetWindowThreadProcessId = user32.func('GetWindowThreadProcessId', 'uint32', ['void*', koffi.out(koffi.pointer('uint32'))]);
     GetAsyncKeyState = user32.func('GetAsyncKeyState', 'int16', ['int']);
     GetKeyState = user32.func('GetKeyState', 'int16', ['int']);
     SendInput = user32.func('SendInput', 'uint32', ['uint32', 'void*', 'int']);
@@ -224,15 +226,44 @@ function lowLevelKeyboardProc(nCode, wParam, lParam, testOverrides = null) {
   // 2. Bypass if Matra Keyboard itself is in the foreground
   if (mainWindowRef && !mainWindowRef.isDestroyed()) {
     try {
-      const fgHwnd = GetForegroundWindow ? GetForegroundWindow() : null;
-      const mainHwndBuf = mainWindowRef.getNativeWindowHandle();
-      const mainHwndAddr = Number(mainHwndBuf.readBigUInt64LE(0));
-      const fgHwndAddr = fgHwnd ? Number(koffi.address(fgHwnd)) : 0;
-      if (fgHwndAddr && fgHwndAddr === mainHwndAddr) {
-        // Matra app has focus; let in-app typing studio handle input natively
+      // Direct Electron check: if the main window has OS focus, bypass immediately
+      if (typeof mainWindowRef.isFocused === 'function' && mainWindowRef.isFocused()) {
         suppressedVkCodes.clear();
         hidePopover();
         return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+      }
+
+      // Process ID check: if the active window belongs to Matra Keyboard process, bypass
+      const fgHwnd = GetForegroundWindow ? GetForegroundWindow() : null;
+      if (fgHwnd && GetWindowThreadProcessId) {
+        const pidBuf = [0];
+        GetWindowThreadProcessId(fgHwnd, pidBuf);
+        if (pidBuf[0] === process.pid) {
+          suppressedVkCodes.clear();
+          hidePopover();
+          return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+        }
+      }
+
+      // Fallback HWND comparison
+      if (typeof mainWindowRef.getNativeWindowHandle === 'function') {
+        const mainHwndBuf = mainWindowRef.getNativeWindowHandle();
+        const mainHwndAddr = Number(mainHwndBuf.readBigUInt64LE(0));
+        let fgHwndAddr = 0;
+        if (typeof fgHwnd === 'number') {
+          fgHwndAddr = fgHwnd;
+        } else if (fgHwnd) {
+          try {
+            fgHwndAddr = Number(koffi.address(fgHwnd));
+          } catch (_e) {
+            fgHwndAddr = 0;
+          }
+        }
+        if (fgHwndAddr && fgHwndAddr === mainHwndAddr) {
+          suppressedVkCodes.clear();
+          hidePopover();
+          return (CallNextHookEx && hookHandle) ? CallNextHookEx(hookHandle, nCode, wParam, lParam) : 0;
+        }
       }
     } catch (_e) {
       // Fallback: proceed

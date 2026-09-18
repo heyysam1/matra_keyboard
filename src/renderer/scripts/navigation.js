@@ -29,6 +29,13 @@ export function setTab(tabName, persist = true) {
   if (activeContent) activeContent.classList.remove('hidden');
   if (activeBtn) activeBtn.classList.add('active');
 
+  if (tabName === 'typing') {
+    const hiddenInput = document.getElementById('typing-hidden-input');
+    if (hiddenInput) {
+      setTimeout(() => hiddenInput.focus(), 50);
+    }
+  }
+
   if (persist) {
     localStorage.setItem('matra_active_tab', tabName);
   }

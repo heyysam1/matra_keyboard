@@ -8,7 +8,7 @@ import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 let session = null;
 
 export function initTypingStudio() {
-  const previewBox = document.getElementById('typing-studio-preview');
+  const previewBox = document.getElementById('typing-preview-box') || document.getElementById('typing-studio-preview');
   const hiddenInput = document.getElementById('typing-hidden-input');
   const popover = document.getElementById('suggestion-popover');
   const popoverList = document.getElementById('popover-candidate-list');
@@ -16,28 +16,19 @@ export function initTypingStudio() {
 
   if (!previewBox || !popover) return;
 
+  // Ensure popover is hidden by default on startup
+  popover.style.display = 'none';
+
   // Restore saved mode and layout preferences from unified settingsStore
   const savedMode = getSetting('mode', 'bn');
   const savedLayout = getSetting('layout', 'avro');
 
-  // Check if this is the user's first run or subsequent runs
-  const isFirstRun = !getSetting('onboardingShown', false);
-
-  if (isFirstRun) {
-    // Initial onboarding showcase text state
-    session = new TypingSession('আমি বাংলায় গান গাই, আমি বাংলার গান গাই; আমি আমার ');
-    session.activeToken = 'bhalobashi';
-    session.candidates = ['ভালোবাসি', 'ভালোবাসী', 'ভালবাসি', 'ভালবাসা', 'ভালো বাসি'];
-    session.selectedIndex = 0;
-    session.isPopoverOpen = true;
-  } else {
-    // Normal subsequent run: clean empty typing canvas
-    session = new TypingSession('');
-    session.activeToken = '';
-    session.candidates = [];
-    session.selectedIndex = 0;
-    session.isPopoverOpen = false;
-  }
+  // Clean empty typing canvas ready for typing
+  session = new TypingSession('');
+  session.activeToken = '';
+  session.candidates = [];
+  session.selectedIndex = 0;
+  session.isPopoverOpen = false;
   session.mode = savedMode;
   session.layout = savedLayout;
 
@@ -48,6 +39,27 @@ export function initTypingStudio() {
       return; // Do not disrupt active text selection
     }
     if (hiddenInput) hiddenInput.focus();
+  });
+
+  // Clicking anywhere in typing content pane focuses the hidden input
+  const typingPane = document.getElementById('content-typing');
+  if (typingPane) {
+    typingPane.addEventListener('click', (e) => {
+      if (popover && popover.contains(e.target)) return;
+      if (candidateBar && candidateBar.contains(e.target)) return;
+      const selectElem = document.getElementById('studio-layout-select');
+      if (selectElem && selectElem.contains(e.target)) return;
+      const selection = window.getSelection();
+      if (selection && selection.toString().length > 0) return;
+      if (hiddenInput) hiddenInput.focus();
+    });
+  }
+
+  // Auto-focus hidden input when window is focused
+  window.addEventListener('focus', () => {
+    if (hiddenInput && !document.getElementById('content-typing')?.classList.contains('hidden')) {
+      hiddenInput.focus();
+    }
   });
 
   if (hiddenInput) {
