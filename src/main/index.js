@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { registerIpcHandlers, loadSettings } from './ipcHandlers.js';
 import { setupTray, destroyTray, getLogoNativeImage } from './tray.js';
 import { registerAppShortcut, unregisterAllShortcuts } from './shortcutManager.js';
+import { initNativeHook, destroyNativeHook, setHookMode, setHookLayout, setInjectionMethod } from './nativeHookManager.js';
 import { logger } from './logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -89,6 +90,14 @@ app.whenReady().then(() => {
     logger.warn(`Default shortcut ${shortcutKey} registration failed: ${regResult.error}`);
   }
 
+  // Initialize native Win32 system-wide typing hook
+  initNativeHook(mainWindow);
+  setHookMode(settings.mode || 'bn');
+  setHookLayout(settings.layout || 'avro');
+  if (settings.injectionMethod) {
+    setInjectionMethod(settings.injectionMethod);
+  }
+
   if (process.env.MATRA_TEST_EXIT) {
     logger.info('Automated test exit requested, terminating cleanly.');
     setTimeout(() => {
@@ -110,6 +119,7 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   logger.info('Initiating clean application shutdown.');
   app.isQuitting = true;
+  destroyNativeHook();
   unregisterAllShortcuts();
   destroyTray();
 });

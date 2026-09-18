@@ -20,11 +20,11 @@ async function loadDictionaryFromStorage() {
         localUserDictionary = stored;
       }
     } catch (err) {
-      console.warn('[DictionaryManager] Failed to load user dictionary from IPC, using localStorage fallback:', err);
-      localUserDictionary = loadLocalFallback();
+      console.error('[DictionaryManager] Failed to load user dictionary from IPC:', err);
+      localUserDictionary = [];
     }
   } else {
-    localUserDictionary = loadLocalFallback();
+    localUserDictionary = [];
   }
 
   // Load into engine's BengaliDictionary map for live typing suggestions
@@ -32,19 +32,8 @@ async function loadDictionaryFromStorage() {
   renderDictionaryList();
 }
 
-function loadLocalFallback() {
-  try {
-    const raw = localStorage.getItem('matra_user_dictionary');
-    return raw ? JSON.parse(raw) : [];
-  } catch (_e) {
-    return [];
-  }
-}
-
-function saveLocalFallback(entries) {
-  try {
-    localStorage.setItem('matra_user_dictionary', JSON.stringify(entries));
-  } catch (_e) {}
+function saveLocalFallback(_entries) {
+  // No-op: Local dictionary is strictly persisted via IPC into matra_user_dictionary.json
 }
 
 function setupDictionaryUI() {

@@ -2,11 +2,11 @@
 // Handles standard font switching, global typography updates, and dynamic custom font installation via FontFace API.
 
 import { showSettingsToast } from './settingsManager.js';
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
-export const STANDARD_FONTS = [
-  { id: 'font-card-noto', name: 'Noto Sans Bengali', bengaliName: 'নোটো সান্স বাংলা (Noto Sans Bengali)', type: 'Google Fonts', sample: 'সর্বজনীন ও আন্তর্জাতিক মানের বাংলা টাইপোগ্রাফি রেন্ডারিং।' },
-  { id: 'font-card-hind', name: 'Hind Siliguri', bengaliName: 'হিন্দ শিলিগুড়ি (Hind Siliguri)', type: 'Bundled', sample: 'আমাদের মনের কথা বাংলায় প্রকাশ পাক নির্দ্বিধায়।' },
-  { id: 'font-card-kalpurush', name: 'Kalpurush', bengaliName: 'কালপুরুষ (Kalpurush)', type: 'System', sample: 'আমার ভাইয়ের রক্তে রাঙানো একুশে ফেব্রুয়ারি।' },
+export const BUNDLED_FONTS = [
+  { id: 'font-card-noto', name: 'Noto Sans Bengali', bengaliName: 'নোটো সান্স বাংলা (Noto Sans Bengali)', type: 'Default (Unicode)', sample: 'আমার সোনার বাংলা, আমি তোমায় ভালোবাসি।' },
+  { id: 'font-card-hind', name: 'Hind Siliguri', bengaliName: 'হিন্দ শিলিগুড়ি (Hind Siliguri)', type: 'Clean Sans', sample: 'মোদের গরব, মোদের আশা, আ মরি বাংলা ভাষা!' },
   { id: 'font-card-solaiman', name: 'SolaimanLipi', bengaliName: 'সোলায়মানলিপি (SolaimanLipi)', type: 'Classic', sample: 'বাংলা বর্ণমালার ঐতিহ্য ও আধুনিক প্রযুক্তির মেলবন্ধন।' },
   { id: 'font-card-siyam', name: 'Siyam Rupali', bengaliName: 'সিয়াম রূপালী (Siyam Rupali)', type: 'Web Safe', sample: 'মুক্ত ও স্বাধীন চিন্তার প্রকাশ হোক মাতৃভাষায়।' }
 ];
@@ -14,9 +14,16 @@ export const STANDARD_FONTS = [
 let activeFont = 'Noto Sans Bengali';
 
 export function initFontManager() {
-  const savedFont = localStorage.getItem('matra_active_font') || 'Noto Sans Bengali';
+  const savedFont = getSetting('activeFont', 'Noto Sans Bengali');
   applyFont(savedFont, false);
   setupFontUI();
+
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.activeFont) {
+      applyFont(settings.activeFont, false);
+    }
+  });
 }
 
 function setupFontUI() {
@@ -109,10 +116,7 @@ export function applyFont(fontName, persist = true) {
   });
 
   if (persist) {
-    localStorage.setItem('matra_active_font', fontName);
-    if (window.matraAPI && window.matraAPI.saveSetting) {
-      window.matraAPI.saveSetting('activeFont', fontName);
-    }
+    setSetting('activeFont', fontName);
   }
 }
 

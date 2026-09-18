@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { updateTrayState, updateTrayIcon, getLogoNativeImage } from './tray.js';
 import { registerAppShortcut } from './shortcutManager.js';
+import { setHookMode, setHookLayout, setInjectionMethod, getConflictingImes } from './nativeHookManager.js';
 import { logger } from './logger.js';
 
 let settingsCache = null;
@@ -27,7 +28,8 @@ export function getDefaultSettings() {
     dockVariant: 1,
     activeFont: 'Noto Sans Bengali',
     lang: 'en',
-    onboardingShown: false
+    onboardingShown: false,
+    injectionMethod: 'sendinput'
   };
 }
 
@@ -115,6 +117,11 @@ export function registerIpcHandlers(mainWindow) {
     const current = loadSettings();
     current[key] = value;
     persistSettings();
+
+    if (key === 'mode') setHookMode(value);
+    if (key === 'layout') setHookLayout(value);
+    if (key === 'injectionMethod') setInjectionMethod(value);
+
     return true;
   });
 
@@ -125,6 +132,10 @@ export function registerIpcHandlers(mainWindow) {
 
   ipcMain.handle('settings:get-all', () => {
     return loadSettings();
+  });
+
+  ipcMain.handle('system:get-ime-conflicts', () => {
+    return getConflictingImes();
   });
 
   // Export Settings
@@ -174,6 +185,11 @@ export function registerIpcHandlers(mainWindow) {
       // Merge imported data with defaults
       settingsCache = { ...getDefaultSettings(), ...importedData };
       persistSettings();
+
+      // Update hook settings
+      if (settingsCache.mode) setHookMode(settingsCache.mode);
+      if (settingsCache.layout) setHookLayout(settingsCache.layout);
+      if (settingsCache.injectionMethod) setInjectionMethod(settingsCache.injectionMethod);
 
       // Apply logo if included
       if (settingsCache.activeLogo) {

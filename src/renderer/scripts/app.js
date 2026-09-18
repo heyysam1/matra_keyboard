@@ -1,6 +1,5 @@
-// Matra Keyboard Renderer Application Entrypoint
-
-import { applyTranslations, toggleLanguage } from './i18n.js';
+import { applyTranslations, toggleLanguage, setLanguage, initI18n } from './i18n.js';
+import { initSettingsStore } from './settingsStore.js';
 import { initTheme, selectThemePreset, setCustomAccent, updateOpacity, updateBlur, cycleAccentColor } from './theme.js';
 import { initLogoManager, setAppLogo } from './logoManager.js';
 import { initDockManager, setDockVariant } from './dockManager.js';
@@ -18,6 +17,7 @@ import { initSystemCareManager, refreshSystemHealth, testApiPing, clearCaches, v
 
 // Expose functions to window for HTML event handlers
 window.toggleLanguage = toggleLanguage;
+window.setLanguage = setLanguage;
 window.selectThemePreset = selectThemePreset;
 window.setCustomAccent = setCustomAccent;
 window.updateOpacity = updateOpacity;
@@ -53,9 +53,12 @@ window.clearCaches = clearCaches;
 window.verifyIntegrity = verifyIntegrity;
 window.resetEngineState = resetEngineState;
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize all subsystems
-  applyTranslations();
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Initialize unified settings store first from IPC
+  await initSettingsStore();
+
+  // 2. Initialize all subsystems with loaded preferences
+  initI18n();
   initTheme();
   initLogoManager();
   initDockManager();

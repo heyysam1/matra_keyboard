@@ -1,4 +1,5 @@
 // Matra Keyboard Theme & Aesthetics Manager
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
 export const themePresets = {
   default: { accent: '#f97316', opacity: 50, blur: 24, id: 'theme-tile-default' },
@@ -13,17 +14,17 @@ const accentCycleList = ['#f97316', '#3b82f6', '#10b981', '#a855f7', '#ec4899', 
 let currentAccentIdx = 0;
 
 export function initTheme() {
-  const savedTheme = localStorage.getItem('matra_theme_key') || 'default';
-  const savedAccent = localStorage.getItem('matra_theme_accent') || '#f97316';
-  const savedOpacity = parseInt(localStorage.getItem('matra_theme_opacity') || '50', 10);
-  const savedBlur = parseInt(localStorage.getItem('matra_theme_blur') || '24', 10);
-  const savedTile = localStorage.getItem('matra_theme_tile') || 'theme-tile-default';
+  const savedTheme = getSetting('theme', 'default');
+  const savedAccent = getSetting('customAccent', '#f97316');
+  const savedOpacity = parseInt(getSetting('glassOpacity', 50), 10);
+  const savedBlur = parseInt(getSetting('glassBlur', 24), 10);
+  const preset = themePresets[savedTheme] || themePresets.default;
 
   selectThemePreset(savedTheme, false);
   setCustomAccent(savedAccent, false);
   updateOpacity(savedOpacity, false);
   updateBlur(savedBlur, false);
-  highlightThemeTile(savedTile);
+  highlightThemeTile(preset.id);
 
   const sliderOpacity = document.getElementById('slider-opacity');
   const sliderBlur = document.getElementById('slider-blur');
@@ -32,6 +33,25 @@ export function initTheme() {
   if (sliderOpacity) sliderOpacity.value = savedOpacity;
   if (sliderBlur) sliderBlur.value = savedBlur;
   if (accentPicker) accentPicker.value = savedAccent;
+
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.theme && themePresets[settings.theme]) {
+      selectThemePreset(settings.theme, false);
+    }
+    if (settings.customAccent) {
+      setCustomAccent(settings.customAccent, false);
+      if (accentPicker) accentPicker.value = settings.customAccent;
+    }
+    if (settings.glassOpacity !== undefined) {
+      updateOpacity(settings.glassOpacity, false);
+      if (sliderOpacity) sliderOpacity.value = settings.glassOpacity;
+    }
+    if (settings.glassBlur !== undefined) {
+      updateBlur(settings.glassBlur, false);
+      if (sliderBlur) sliderBlur.value = settings.glassBlur;
+    }
+  });
 }
 
 export function updateOpacity(val, persist = true) {
@@ -39,14 +59,14 @@ export function updateOpacity(val, persist = true) {
   document.documentElement.style.setProperty('--glass-opacity', decimal);
   const label = document.getElementById('opacity-val-label');
   if (label) label.textContent = `${val}%`;
-  if (persist) localStorage.setItem('matra_theme_opacity', val);
+  if (persist) setSetting('glassOpacity', val);
 }
 
 export function updateBlur(val, persist = true) {
   document.documentElement.style.setProperty('--glass-blur', `${val}px`);
   const label = document.getElementById('blur-val-label');
   if (label) label.textContent = `${val}px`;
-  if (persist) localStorage.setItem('matra_theme_blur', val);
+  if (persist) setSetting('glassBlur', val);
 }
 
 export function setCustomAccent(color, persist = true) {
@@ -64,7 +84,7 @@ export function setCustomAccent(color, persist = true) {
   const accentPicker = document.getElementById('accent-color-picker');
   if (accentPicker) accentPicker.value = color;
 
-  if (persist) localStorage.setItem('matra_theme_accent', color);
+  if (persist) setSetting('customAccent', color);
 }
 
 export function cycleAccentColor() {
@@ -90,8 +110,7 @@ export function selectThemePreset(key, persist = true) {
 
   highlightThemeTile(preset.id);
   if (persist) {
-    localStorage.setItem('matra_theme_key', key);
-    localStorage.setItem('matra_theme_tile', preset.id);
+    setSetting('theme', key);
   }
 }
 

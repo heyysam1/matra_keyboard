@@ -1,9 +1,18 @@
 // Matra Keyboard Top Dock / Bar Variant Manager
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
-let activeDockVariant = parseInt(localStorage.getItem('matra_dock_variant') || '1', 10);
+let activeDockVariant = 1;
 
 export function initDockManager() {
+  activeDockVariant = parseInt(getSetting('dockVariant', 1), 10);
   setDockVariant(activeDockVariant, false);
+
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.dockVariant !== undefined) {
+      setDockVariant(parseInt(settings.dockVariant, 10), false);
+    }
+  });
 }
 
 export function setDockVariant(variantNum, persist = true) {
@@ -33,7 +42,7 @@ export function setDockVariant(variantNum, persist = true) {
   }
 
   if (persist) {
-    localStorage.setItem('matra_dock_variant', variantNum);
+    setSetting('dockVariant', variantNum);
   }
 }
 

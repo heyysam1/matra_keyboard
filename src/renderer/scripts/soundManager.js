@@ -1,5 +1,6 @@
 // Matra Keyboard — Tactile Mechanical & Normal Typing Audio Synthesizer
 // Uses Web Audio API for lightweight, standalone keypress feedback without external audio files.
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
 let audioCtx = null;
 let soundEnabled = true;
@@ -32,27 +33,16 @@ if (typeof window !== 'undefined') {
 }
 
 export function initSoundManager() {
-  const savedEnabled = localStorage.getItem('matra_sound_enabled');
-  if (savedEnabled !== null) {
-    soundEnabled = savedEnabled === 'true';
-  }
+  soundEnabled = getSetting('soundEnabled', true);
+  soundProfile = getSetting('soundProfile', 'normal');
+  soundVolume = getSetting('soundVolume', 0.20);
 
-  const savedProfile = localStorage.getItem('matra_sound_profile');
-  if (savedProfile && ['normal', 'tactile', 'typewriter', 'membrane'].includes(savedProfile)) {
-    soundProfile = savedProfile;
-  } else {
-    soundProfile = 'normal';
-  }
-
-  const savedVol = localStorage.getItem('matra_sound_volume');
-  if (savedVol !== null) {
-    const parsed = parseFloat(savedVol);
-    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
-      soundVolume = parsed;
-    }
-  } else {
-    soundVolume = 0.20;
-  }
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.soundEnabled !== undefined) soundEnabled = Boolean(settings.soundEnabled);
+    if (settings.soundProfile) soundProfile = settings.soundProfile;
+    if (settings.soundVolume !== undefined) soundVolume = parseFloat(settings.soundVolume) || 0.20;
+  });
 }
 
 export function isSoundEnabled() {
@@ -61,7 +51,7 @@ export function isSoundEnabled() {
 
 export function setSoundEnabled(enabled) {
   soundEnabled = Boolean(enabled);
-  localStorage.setItem('matra_sound_enabled', soundEnabled ? 'true' : 'false');
+  setSetting('soundEnabled', soundEnabled);
   if (window.matraAPI && window.matraAPI.syncTrayState) {
     window.matraAPI.syncTrayState({ soundEnabled });
   }
@@ -74,7 +64,7 @@ export function getSoundProfile() {
 export function setSoundProfile(profile) {
   if (!['normal', 'tactile', 'typewriter', 'membrane'].includes(profile)) return;
   soundProfile = profile;
-  localStorage.setItem('matra_sound_profile', profile);
+  setSetting('soundProfile', profile);
 }
 
 export function getSoundVolume() {
@@ -84,7 +74,7 @@ export function getSoundVolume() {
 export function setSoundVolume(volume) {
   const vol = Math.max(0, Math.min(1, parseFloat(volume) || 0));
   soundVolume = vol;
-  localStorage.setItem('matra_sound_volume', vol.toString());
+  setSetting('soundVolume', vol);
 }
 
 /**
@@ -247,6 +237,8 @@ export function playKeyClick() {
   if (!soundEnabled) return;
   synthesizeClick();
 }
+
+export const playTypingSound = playKeyClick;
 
 export function testSound(profile = null) {
   synthesizeClick(profile || soundProfile);

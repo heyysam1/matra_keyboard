@@ -287,7 +287,22 @@ export const translations = {
   }
 };
 
-let currentLang = localStorage.getItem('matra_lang') || 'en';
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
+
+let currentLang = 'en';
+
+export function initI18n() {
+  currentLang = getSetting('lang', 'en');
+  applyTranslations();
+
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.lang && (settings.lang === 'bn' || settings.lang === 'en')) {
+      currentLang = settings.lang;
+      applyTranslations();
+    }
+  });
+}
 
 export function getLanguage() {
   return currentLang;
@@ -296,7 +311,7 @@ export function getLanguage() {
 export function setLanguage(lang) {
   if (lang !== 'bn' && lang !== 'en') return;
   currentLang = lang;
-  localStorage.setItem('matra_lang', lang);
+  setSetting('lang', lang);
   applyTranslations();
 }
 

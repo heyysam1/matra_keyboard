@@ -3,6 +3,7 @@
 
 import { showSettingsToast } from './settingsManager.js';
 import { BENGALI_LEXICON, getUserWords } from '../../engine/BengaliDictionary.js';
+import { getSetting } from './settingsStore.js';
 
 let pingInProgress = false;
 
@@ -96,7 +97,7 @@ export async function refreshSystemHealth() {
   // 4. Shortcut Hook
   const hookEl = document.getElementById('care-hook-status');
   if (hookEl) {
-    const shortcut = localStorage.getItem('matra_active_shortcut') || 'ctrl-space';
+    const shortcut = getSetting('shortcut', 'ctrl-space');
     hookEl.textContent = `${shortcut.toUpperCase()} (নিরাপদ ও সক্রিয়)`;
   }
 

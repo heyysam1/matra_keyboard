@@ -1,13 +1,14 @@
 // Matra Keyboard — Typing Studio & Popover UI Controller
 
 import { TypingSession } from '../../engine/TypingSession.js';
-import { playKeyClick } from './soundManager.js';
 import { setViewerLayout } from './layoutViewer.js';
+import { playTypingSound } from './soundManager.js';
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
 let session = null;
 
 export function initTypingStudio() {
-  const previewBox = document.getElementById('typing-preview-box');
+  const previewBox = document.getElementById('typing-studio-preview');
   const hiddenInput = document.getElementById('typing-hidden-input');
   const popover = document.getElementById('suggestion-popover');
   const popoverList = document.getElementById('popover-candidate-list');
@@ -15,12 +16,12 @@ export function initTypingStudio() {
 
   if (!previewBox || !popover) return;
 
-  // Restore saved mode and layout preferences
-  const savedMode = localStorage.getItem('matra_active_mode') || 'bn';
-  const savedLayout = localStorage.getItem('matra_active_layout') || 'avro';
+  // Restore saved mode and layout preferences from unified settingsStore
+  const savedMode = getSetting('mode', 'bn');
+  const savedLayout = getSetting('layout', 'avro');
 
   // Check if this is the user's first run or subsequent runs
-  const isFirstRun = !localStorage.getItem('matra_onboarding_done');
+  const isFirstRun = !getSetting('onboardingShown', false);
 
   if (isFirstRun) {
     // Initial onboarding showcase text state
@@ -96,6 +97,15 @@ export function initTypingStudio() {
     }
   });
 
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.mode) session.setMode(settings.mode);
+    if (settings.layout) {
+      session.setLayout(settings.layout);
+      setViewerLayout(settings.layout);
+    }
+  });
+
   // Initial render & sync
   session.emitChange();
   syncStateToTray(session.getState());
@@ -105,7 +115,7 @@ export function setAppMode(mode) {
   if (!session) return;
   const targetMode = mode === 'en' ? 'en' : 'bn';
   session.setMode(targetMode);
-  localStorage.setItem('matra_active_mode', targetMode);
+  setSetting('mode', targetMode);
   syncStateToTray(session.getState());
 }
 
@@ -118,7 +128,7 @@ export function toggleAppMode() {
 export function setAppLayout(layout) {
   if (!session) return;
   session.setLayout(layout);
-  localStorage.setItem('matra_active_layout', layout);
+  setSetting('layout', layout);
   setViewerLayout(layout);
   syncStateToTray(session.getState());
 }

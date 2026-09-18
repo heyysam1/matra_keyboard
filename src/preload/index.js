@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('matraAPI', {
   getSystemHealth: () => ipcRenderer.invoke('system:get-health'),
   clearSystemCache: () => ipcRenderer.invoke('system:clear-cache'),
   verifySystemIntegrity: () => ipcRenderer.invoke('system:verify-integrity'),
+  getImeConflicts: () => ipcRenderer.invoke('system:get-ime-conflicts'),
   onTrayAction: (callback) => {
     ipcRenderer.on('tray:action', (_event, action) => callback(action));
   },
@@ -35,5 +36,8 @@ contextBridge.exposeInMainWorld('matraAPI', {
   },
   onSettingsImported: (callback) => {
     ipcRenderer.on('settings:imported', (_event, settings) => callback(settings));
+  },
+  onImeConflict: (callback) => {
+    ipcRenderer.on('system:ime-conflict', (_event, imes) => callback(imes));
   }
 });

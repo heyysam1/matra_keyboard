@@ -13,6 +13,7 @@ import {
 import { setAppLogo } from './logoManager.js';
 import { selectThemePreset, setCustomAccent, updateOpacity, updateBlur } from './theme.js';
 import { setDockVariant } from './dockManager.js';
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
 export function initSettingsManager() {
   setupAutoStartup();
@@ -64,7 +65,7 @@ function setupShortcutSelector() {
   let capturedKeys = '';
 
   // Load saved shortcut
-  const savedShortcut = localStorage.getItem('matra_active_shortcut') || 'ctrl-space';
+  const savedShortcut = getSetting('shortcut', 'ctrl-space');
   let matchedPreset = false;
 
   shortcutPills.forEach((p) => {
@@ -133,7 +134,7 @@ function setupShortcutSelector() {
       const curInd = pill.querySelector('.shortcut-indicator');
       if (curInd) curInd.style.backgroundColor = 'var(--brand-accent)';
 
-      localStorage.setItem('matra_active_shortcut', shortcutKey);
+      setSetting('shortcut', shortcutKey);
       showSettingsToast('শর্টকাট সফলভাবে পরিবর্তন করা হয়েছে', 'success');
     });
   });
@@ -215,7 +216,7 @@ function setupShortcutSelector() {
       }
       if (customLabel) customLabel.textContent = capturedKeys;
 
-      localStorage.setItem('matra_active_shortcut', capturedKeys);
+      setSetting('shortcut', capturedKeys);
       showSettingsToast(`কাস্টম শর্টকাট '${capturedKeys}' সফলভাবে সক্রিয় করা হয়েছে`, 'success');
     });
   }
@@ -348,6 +349,12 @@ function applyImportedSettings(settings) {
   if (settings.glassBlur !== undefined) updateBlur(settings.glassBlur);
   if (settings.dockVariant) setDockVariant(settings.dockVariant);
   if (settings.activeLogo) setAppLogo(settings.activeLogo, false);
+  if (settings.activeFont && window.applyFont) window.applyFont(settings.activeFont, false);
+  if (settings.mode && window.setAppMode) window.setAppMode(settings.mode);
+  if (settings.layout && window.setAppLayout) window.setAppLayout(settings.layout);
+  if (settings.lang && window.setLanguage) window.setLanguage(settings.lang);
+  if (settings.onboardingShown && window.dismissOnboarding) window.dismissOnboarding();
+
   if (settings.soundEnabled !== undefined) {
     setSoundEnabled(settings.soundEnabled);
     const soundToggle = document.getElementById('setting-sound-enabled');
@@ -375,7 +382,7 @@ function applyImportedSettings(settings) {
         p.classList.remove('active');
       }
     });
-    localStorage.setItem('matra_active_shortcut', settings.shortcut);
+    setSetting('shortcut', settings.shortcut);
   }
 }
 

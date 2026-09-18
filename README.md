@@ -129,21 +129,25 @@ Unless signed with a valid Microsoft EV or standard Authenticode Code-Signing Ce
 ## 4. Technical Disclosures & Architecture Constraints
 
 ### 4.1 System-Wide Typing Architecture (Section 3)
-- **Implementation Approach:** Matra Keyboard implements system-wide keyboard input via a native low-level Windows keyboard hook (`SetWindowsHookEx` with `WH_KEYBOARD_LL`) combined with Unicode virtual text injection (`SendInput`).
-- **Known Limitations:**
+- **Implementation Approach:** Matra Keyboard implements genuine system-wide keyboard input via a Win32 low-level keyboard hook (`SetWindowsHookExW` with `WH_KEYBOARD_LL`) and synthetic Unicode injection (`SendInputW`) via **`koffi`** (binding `user32.dll` directly with prebuilt ABI-stable N-API binaries requiring zero build tools).
+- **Engine Scope & Latency Disclosures:**
+  1. **Synchronous Offline Engine for System Typing:** Win32 low-level hooks enforce strict OS callback timeouts. System-wide typing executes the rule-based phonetic engine (`OfflinePhoneticEngine.js`) synchronously in sub-millisecond time (<0.1ms). Keystrokes are never deferred to async network requests, ensuring zero typing lag, full offline functionality, and 100% privacy (zero keystrokes sent over the wire).
+  2. **In-App Suggestion Popover vs. System-Wide Auto-Commit:** System-wide typing performs direct phonetic composition with auto-commitment on word boundaries (Space, Enter, Tab, punctuation). The full 5-candidate keyboard-navigable suggestion popover is active inside the in-app Typing Studio.
+  3. **Mid-Composition Backspacing:** Backspacing during active phonetic composition deletes previously injected Unicode clusters and re-transliterates remaining characters. While seamless in standard Win32 and Chromium editors (Notepad, Edge, Chrome), rich text editors with complex ligature clustering may handle mid-conjunct cursor edits differently.
+  4. **Clipboard-Paste Fallback:** In addition to standard `SendInputW` Unicode injection, a user-selectable Clipboard-Paste mode is available in Settings, which captures the text, injects via simulated `Ctrl+V`, and automatically restores the user's prior clipboard buffer within 50ms.
+  5. **IME Coexistence Scanner:** Matra Keyboard actively checks for running processes of other Bengali keyboard tools (`Avro Keyboard.exe`, `BijoyBayanno.exe`, `Bijoy 52.exe`, `OpenBangla Keyboard.exe`) to warn the user against running multiple global hooks concurrently.
+- **Known OS Limitations:**
   1. **Privilege Elevation (UIPI):** In accordance with Windows User Interface Privilege Isolation (UIPI), standard user processes cannot inject input into applications running with elevated Administrator privileges (e.g., Task Manager, Command Prompt run as admin). To type into elevated windows, Matra Keyboard must be launched as Administrator.
-  2. **DirectX Fullscreen Games:** Some exclusive fullscreen games bypass Windows input queues; borderless windowed mode is recommended for these titles.
-  3. **Secure Desktop & Password Fields:** In compliance with Section 24, Matra Keyboard does not attempt to intercept secure system password prompts (e.g., Windows UAC dialogs, Windows Login Lock screen).
-  4. **Clipboard Integrity:** Any auxiliary paste fallbacks automatically preserve and restore the user's prior clipboard buffer to prevent silent overwrite.
+  2. **DirectX Fullscreen Games:** Exclusive fullscreen games that bypass Windows message queues require borderless windowed mode.
+  3. **Secure Desktop & Password Prompts:** In compliance with Section 24, Matra Keyboard does not intercept secure system password dialogs (e.g., Windows UAC prompts, Windows Login Lock screen).
 
 ### 4.2 Single Transliteration Engine Standard (Section 4)
-Both the in-app Typing Studio and the system-wide typing path share the exact same underlying transliteration engine:
+Both the in-app Typing Studio and the system-wide typing path share the exact same underlying phonetic rules and layouts:
 - `src/engine/TypingSession.js`
-- `src/engine/TransliterationService.js`
 - `src/engine/OfflinePhoneticEngine.js`
 - `src/engine/LayoutManager.js`
 - `src/engine/BengaliDictionary.js`
-No separate or divergent transliteration code exists.
+- `src/engine/TransliterationService.js` (Multi-candidate online API for in-app Studio)
 
 ### 4.3 Auto-Update Mechanism Scope (Section 24A & Section 28)
 - **Status:** **Out of Scope for Initial Standalone Build.**

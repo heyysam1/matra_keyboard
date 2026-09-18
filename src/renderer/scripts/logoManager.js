@@ -2,6 +2,7 @@
 import logoOrange from '../assets/logos/logo-orange.png';
 import logoDark from '../assets/logos/logo-dark.png';
 import logoWhite from '../assets/logos/logo-white.png';
+import { getSetting, setSetting, subscribeSetting } from './settingsStore.js';
 
 export const logos = {
   orange: logoOrange,
@@ -9,10 +10,18 @@ export const logos = {
   white: logoWhite
 };
 
-let activeLogoKey = localStorage.getItem('matra_active_logo') || 'orange';
+let activeLogoKey = 'orange';
 
 export function initLogoManager() {
+  activeLogoKey = getSetting('activeLogo', 'orange');
   setAppLogo(activeLogoKey, false);
+
+  // Re-apply if settings imported
+  subscribeSetting('*', (settings) => {
+    if (settings.activeLogo && logos[settings.activeLogo]) {
+      setAppLogo(settings.activeLogo, false);
+    }
+  });
 }
 
 export function setAppLogo(key, persist = true) {
@@ -38,7 +47,7 @@ export function setAppLogo(key, persist = true) {
   });
 
   if (persist) {
-    localStorage.setItem('matra_active_logo', key);
+    setSetting('activeLogo', key);
     if (window.matraAPI && window.matraAPI.setAppLogo) {
       window.matraAPI.setAppLogo(key);
     }

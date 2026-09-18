@@ -1,7 +1,8 @@
 // Matra Keyboard First-Run Onboarding Controller
+import { getSetting, setSetting } from './settingsStore.js';
 
 export function initOnboarding() {
-  const isDone = localStorage.getItem('matra_onboarding_done');
+  const isDone = getSetting('onboardingShown', false);
   const overlay = document.getElementById('onboarding-modal');
 
   if (!isDone && overlay) {
@@ -19,10 +20,7 @@ export function dismissOnboarding() {
   if (overlay) {
     overlay.classList.add('hidden');
   }
-  localStorage.setItem('matra_onboarding_done', 'true');
-  if (window.matraAPI && window.matraAPI.saveSetting) {
-    window.matraAPI.saveSetting('onboardingShown', true);
-  }
+  setSetting('onboardingShown', true);
 }
 
 export function showOnboarding() {
